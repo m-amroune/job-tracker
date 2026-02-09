@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { loadJobs, saveJobs } from "@/lib/storage";
 import { JobApplication } from "@/types/job";
 
-export default function Home() {
-  // Main state: job applications list
-  // Initialized once from localStorage
-  const [jobs, setJobs] = useState<JobApplication[]>(() => loadJobs());
+export default function Page() {
+  // Job applications state (client-side only)
+  const [jobs, setJobs] = useState<JobApplication[]>([]);
+
+  // Load from localStorage on client only
+  useEffect(() => {
+    setJobs(loadJobs());
+  }, []);
 
   // Add a new job application
   // Update state and localStorage
@@ -20,7 +24,7 @@ export default function Home() {
       createdAt: new Date().toISOString(),
     };
 
-    // Create a new array
+    // Create a new array (do not mutate state)
     const updatedJobs = [...jobs, newJob];
 
     // Update state
