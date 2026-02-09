@@ -2,7 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { loadJobs, saveJobs } from "@/lib/storage";
-import { JobApplication } from "@/types/job";
+import { JobApplication, JobStatus } from "@/types/job";
+
+const STATUS_ORDER = ["todo", "applied", "interview", "rejected"] as const;
+
+function getNextStatus(current: JobStatus): JobStatus {
+  const index = STATUS_ORDER.indexOf(current);
+  const nextIndex = (index + 1) % STATUS_ORDER.length;
+  return STATUS_ORDER[nextIndex];
+}
 
 export default function Page() {
   // Job applications state (client-side only)
@@ -34,6 +42,15 @@ export default function Page() {
     saveJobs(updatedJobs);
   }
 
+  function cycleStatus(id: string) {
+    const updatedJobs = jobs.map((job) =>
+      job.id === id ? { ...job, status: getNextStatus(job.status) } : job,
+    );
+
+    setJobs(updatedJobs);
+    saveJobs(updatedJobs);
+  }
+
   return (
     <main>
       <h1>Job tracker</h1>
@@ -44,8 +61,8 @@ export default function Page() {
       ) : (
         <ul>
           {jobs.map((job) => (
-            <li key={job.id}>
-              {job.company} — {job.position}
+            <li key={job.id} onClick={() => cycleStatus(job.id)}>
+              {job.company} — {job.position} ({job.status})
             </li>
           ))}
         </ul>
