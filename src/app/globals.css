@@ -40,3 +40,31 @@ a {
     color-scheme: dark;
   }
 }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+th,
+td {
+  border: 1px solid #e5e7eb;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #f9fafb;
+  font-weight: 600;
+}
+
+tbody tr:hover {
+  background-color: #f3f4f6;
+}
+
+span {
+  cursor: pointer;
+  font-weight: 500;
+}

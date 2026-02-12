@@ -69,22 +69,39 @@ export default function Page() {
       {jobs.length === 0 ? (
         <p>No applications yet</p>
       ) : (
-        <ul>
-          {jobs.map((job) => (
-            <li key={job.id} onClick={() => cycleStatus(job.id)}>
-              {job.company} — {job.position} ({job.status})
-              <button
-                // Prevent click from triggering status change
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteJob(job.id);
-                }}
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
+        <table>
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Position</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {jobs.map((job) => (
+              <tr key={job.id}>
+                <td>{job.company}</td>
+                <td>{job.position}</td>
+                <td>
+                  <span onClick={() => cycleStatus(job.id)}>{job.status}</span>
+                </td>
+                <td>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (window.confirm("Delete this application?")) {
+                        deleteJob(job.id);
+                      }
+                    }}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </main>
   );
