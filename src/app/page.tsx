@@ -18,6 +18,9 @@ export default function Page() {
   // Job applications state (client-side data)
   const [jobs, setJobs] = useState<JobApplication[]>([]);
 
+  const [company, setCompany] = useState("");
+  const [position, setPosition] = useState("");
+
   // Load jobs from localStorage after mount
   useEffect(() => {
     setJobs(loadJobs());
@@ -26,10 +29,12 @@ export default function Page() {
   // Add a new job application
   // Update state and localStorage
   function addJob() {
+    if (!company.trim() || !position.trim()) return;
+
     const newJob: JobApplication = {
       id: crypto.randomUUID(),
-      company: "Example company",
-      position: "Example position",
+      company: company.trim(),
+      position: position.trim(),
       status: "todo",
       createdAt: new Date().toISOString(),
     };
@@ -39,6 +44,9 @@ export default function Page() {
 
     setJobs(updatedJobs);
     saveJobs(updatedJobs);
+
+    setCompany("");
+    setPosition("");
   }
 
   // Cycle the status of a job when the list item is clicked
@@ -64,7 +72,24 @@ export default function Page() {
   return (
     <main>
       <h1>Job tracker</h1>
-      <button onClick={addJob}>Add application</button>
+
+      <div style={{ marginTop: "1rem", marginBottom: "1rem" }}>
+        <input
+          type="text"
+          placeholder="Company"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+        />
+
+        <input
+          type="text"
+          placeholder="Position"
+          value={position}
+          onChange={(e) => setPosition(e.target.value)}
+        />
+
+        <button onClick={addJob}>Add</button>
+      </div>
 
       {jobs.length === 0 ? (
         <p>No applications yet</p>
