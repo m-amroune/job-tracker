@@ -41,6 +41,26 @@ a {
   }
 }
 
+.conteneur {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem 3rem;
+}
+
+.main-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.form-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -48,23 +68,104 @@ table {
   font-size: 0.95rem;
 }
 
+thead th {
+  text-align: center;
+}
+
 th,
 td {
   border: 1px solid #e5e7eb;
   padding: 8px 12px;
   text-align: left;
-}
-
-th {
-  background-color: #f9fafb;
-  font-weight: 600;
+  vertical-align: middle;
 }
 
 tbody tr:hover {
   background-color: #f3f4f6;
 }
 
+table thead th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  padding: 10px 12px;
+}
+
 span {
   cursor: pointer;
   font-weight: 500;
+}
+
+input[type="text"] {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+td input {
+  width: auto;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+button {
+  padding: 8px 14px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+button:hover {
+  background-color: #2563eb;
+}
+
+.status-cell {
+  padding: 4px 6px;
+  text-align: center;
+}
+
+.actions {
+  padding: 4px 6px;
+  text-align: center;
+  white-space: nowrap;
+  max-width: 120px;
+}
+
+.actions button {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  margin-right: 6px;
+  min-width: 70px;
+}
+
+.actions button:last-child {
+  margin-right: 0;
+}
+
+.actions button:first-child {
+  background-color: #e5e7eb;
+  color: #111827;
+}
+
+.actions button:first-child:hover {
+  background-color: #d1d5db;
+}
+
+.actions .danger {
+  background-color: #ef4444;
+  color: white;
+}
+
+.actions .danger:hover {
+  background-color: #dc2626;
 }

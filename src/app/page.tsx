@@ -81,10 +81,13 @@ export default function Page() {
   }
 
   return (
-    <main>
-      <h1>Job tracker</h1>
+    <main className="conteneur">
+      <h1 className="main-title">Job tracker</h1>
 
-      <div style={{ marginTop: "1rem", marginBottom: "1rem" }}>
+      <div
+        className="form-row"
+        style={{ marginTop: "1rem", marginBottom: "1rem" }}
+      >
         <input
           type="text"
           placeholder="Company"
@@ -114,6 +117,7 @@ export default function Page() {
               <th></th>
             </tr>
           </thead>
+
           <tbody>
             {jobs.map((job) => (
               <tr key={job.id}>
@@ -143,11 +147,11 @@ export default function Page() {
                   )}
                 </td>
 
-                <td>
+                <td className="status-cell">
                   <span onClick={() => cycleStatus(job.id)}>{job.status}</span>
                 </td>
 
-                <td>
+                <td className="actions">
                   {editingId === job.id ? (
                     <button onClick={() => setEditingId(null)}>Save</button>
                   ) : (
@@ -155,6 +159,7 @@ export default function Page() {
                   )}
 
                   <button
+                    className="danger"
                     onClick={(e) => {
                       e.stopPropagation();
                       if (window.confirm("Delete this application?")) {
