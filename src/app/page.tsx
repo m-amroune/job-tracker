@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import { loadJobs, saveJobs } from "@/lib/storage";
 import { JobApplication, JobStatus } from "@/types/job";
 
-// Ordered list of job statuses (business rule)
+// Ordered list of job statuses (business workflow)
 const STATUS_ORDER = ["todo", "applied", "interview", "rejected"] as const;
 
-// Return the next status in the cycle
+// Return the next status in the workflow
 function getNextStatus(current: JobStatus): JobStatus {
   const index = STATUS_ORDER.indexOf(current);
   const nextIndex = (index + 1) % STATUS_ORDER.length;
@@ -15,19 +15,22 @@ function getNextStatus(current: JobStatus): JobStatus {
 }
 
 export default function Page() {
-  // Job applications state (client-side data)
+  // Stored job applications (hydrated from localStorage)
   const [jobs, setJobs] = useState<JobApplication[]>([]);
 
+  // Controlled inputs for creation form
   const [company, setCompany] = useState("");
   const [position, setPosition] = useState("");
 
-  // Load jobs from localStorage after mount
+  // Id of the row currently being edited (null = no edit mode)
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  // Hydrate state from localStorage on client mount
   useEffect(() => {
     setJobs(loadJobs());
   }, []);
 
-  // Add a new job application
-  // Update state and localStorage
+  // Create a new job entry from form inputs and persist
   function addJob() {
     if (!company.trim() || !position.trim()) return;
 
@@ -39,7 +42,7 @@ export default function Page() {
       createdAt: new Date().toISOString(),
     };
 
-    // Create a new array (immutability)
+    // Create new array (immutability)
     const updatedJobs = [...jobs, newJob];
 
     setJobs(updatedJobs);
@@ -49,8 +52,7 @@ export default function Page() {
     setPosition("");
   }
 
-  // Cycle the status of a job when the list item is clicked
-  // Update state and localStorage
+  // Move job to next status in workflow and persist
   function cycleStatus(id: string) {
     const updatedJobs = jobs.map((job) =>
       job.id === id ? { ...job, status: getNextStatus(job.status) } : job,
@@ -60,10 +62,19 @@ export default function Page() {
     saveJobs(updatedJobs);
   }
 
-  // Delete a job application by id
-  // Update state and localStorage
+  // Remove job from list and persist
   function deleteJob(id: string) {
     const updatedJobs = jobs.filter((job) => job.id !== id);
+
+    setJobs(updatedJobs);
+    saveJobs(updatedJobs);
+  }
+
+  // Update a single field while editing a row
+  function updateJob(id: string, field: "company" | "position", value: string) {
+    const updatedJobs = jobs.map((job) =>
+      job.id === id ? { ...job, [field]: value } : job,
+    );
 
     setJobs(updatedJobs);
     saveJobs(updatedJobs);
@@ -106,12 +117,43 @@ export default function Page() {
           <tbody>
             {jobs.map((job) => (
               <tr key={job.id}>
-                <td>{job.company}</td>
-                <td>{job.position}</td>
+                <td>
+                  {editingId === job.id ? (
+                    <input
+                      value={job.company}
+                      onChange={(e) =>
+                        updateJob(job.id, "company", e.target.value)
+                      }
+                    />
+                  ) : (
+                    job.company
+                  )}
+                </td>
+
+                <td>
+                  {editingId === job.id ? (
+                    <input
+                      value={job.position}
+                      onChange={(e) =>
+                        updateJob(job.id, "position", e.target.value)
+                      }
+                    />
+                  ) : (
+                    job.position
+                  )}
+                </td>
+
                 <td>
                   <span onClick={() => cycleStatus(job.id)}>{job.status}</span>
                 </td>
+
                 <td>
+                  {editingId === job.id ? (
+                    <button onClick={() => setEditingId(null)}>Save</button>
+                  ) : (
+                    <button onClick={() => setEditingId(job.id)}>Edit</button>
+                  )}
+
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
