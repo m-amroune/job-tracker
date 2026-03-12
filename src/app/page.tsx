@@ -14,6 +14,14 @@ function getNextStatus(current: JobStatus): JobStatus {
   return STATUS_ORDER[nextIndex];
 }
 
+const DEFAULT_JOB: JobApplication = {
+  id: crypto.randomUUID(),
+  company: "Example company",
+  position: "Frontend Developer",
+  status: "todo",
+  createdAt: new Date().toISOString(),
+};
+
 export default function Page() {
   // Stored job applications (hydrated from localStorage)
   const [jobs, setJobs] = useState<JobApplication[]>([]);
@@ -27,7 +35,15 @@ export default function Page() {
 
   // Hydrate state from localStorage on client mount
   useEffect(() => {
-    setJobs(loadJobs());
+    const storedJobs = loadJobs();
+
+    if (storedJobs.length === 0) {
+      setJobs([DEFAULT_JOB]);
+      saveJobs([DEFAULT_JOB]);
+      return;
+    }
+
+    setJobs(storedJobs);
   }, []);
 
   // Create a new job entry from form inputs and persist

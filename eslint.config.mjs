@@ -6,7 +6,6 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
 
-  // Désactive les règles fantômes qui provoquent tes erreurs
   {
     rules: {
       "react-compiler/react-compiler": "off",
