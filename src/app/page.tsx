@@ -14,13 +14,16 @@ function getNextStatus(current: JobStatus): JobStatus {
   return STATUS_ORDER[nextIndex];
 }
 
-const DEFAULT_JOB: JobApplication = {
-  id: crypto.randomUUID(),
-  company: "Example company",
-  position: "Frontend Developer",
-  status: "todo",
-  createdAt: new Date().toISOString(),
-};
+// Generate a fresh default job entry (avoids creating a static ID at module load)
+function createDefaultJob(): JobApplication {
+  return {
+    id: crypto.randomUUID(),
+    company: "Example company",
+    position: "Frontend Developer",
+    status: "todo",
+    createdAt: new Date().toISOString(),
+  };
+}
 
 export default function Page() {
   // Stored job applications (hydrated from localStorage)
@@ -33,16 +36,18 @@ export default function Page() {
   // Id of the row currently being edited (null = no edit mode)
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  // Hydrate state from localStorage on client mount
   useEffect(() => {
     const storedJobs = loadJobs();
 
+    // If no data in storage, initialize with a new default job
     if (storedJobs.length === 0) {
-      setJobs([DEFAULT_JOB]);
-      saveJobs([DEFAULT_JOB]);
+      const defaultJob = createDefaultJob();
+      setJobs([defaultJob]);
+      saveJobs([defaultJob]);
       return;
     }
 
+    // Otherwise hydrate state from storage
     setJobs(storedJobs);
   }, []);
 
