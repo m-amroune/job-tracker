@@ -1,21 +1,21 @@
 import { JobApplication } from "@/types/job";
 
-export const JOBS_STORAGE_KEY = "job-tracker-applications";
+const STORAGE_KEY = "jobs";
 
-export function loadJobs(): JobApplication[] {
-  if (typeof window === "undefined") return [];
-
-  const raw = localStorage.getItem(JOBS_STORAGE_KEY);
-  if (!raw) return [];
-
+/**
+ * Load raw data from localStorage.
+ * Returns unknown so caller must validate/normalize.
+ */
+export function loadJobs(): unknown {
   try {
-    return JSON.parse(raw) as JobApplication[];
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw);
   } catch {
     return [];
   }
 }
 
 export function saveJobs(jobs: JobApplication[]) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(JOBS_STORAGE_KEY, JSON.stringify(jobs));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(jobs));
 }

@@ -5,13 +5,22 @@ import { loadJobs, saveJobs } from "@/lib/storage";
 import { JobApplication, JobStatus } from "@/types/job";
 
 // Ordered list of job statuses (business workflow)
-const STATUS_ORDER = ["todo", "applied", "interview", "rejected"] as const;
+const STATUS_ORDER: readonly JobStatus[] = [
+  "todo",
+  "applied",
+  "interview",
+  "rejected",
+];
 
-// Return the next status in the workflow
+// Move to the next status (rejected is terminal)
 function getNextStatus(current: JobStatus): JobStatus {
   const index = STATUS_ORDER.indexOf(current);
-  const nextIndex = (index + 1) % STATUS_ORDER.length;
-  return STATUS_ORDER[nextIndex];
+
+  if (index === STATUS_ORDER.length - 1) {
+    return current; // stay on rejected
+  }
+
+  return STATUS_ORDER[index + 1];
 }
 
 // Generate a fresh default job entry (avoids creating a static ID at module load)
@@ -36,19 +45,61 @@ export default function Page() {
   // Id of the row currently being edited (null = no edit mode)
   const [editingId, setEditingId] = useState<string | null>(null);
 
+  // Load jobs on first render
   useEffect(() => {
-    const storedJobs = loadJobs();
+    const raw = loadJobs();
 
     // If no data in storage, initialize with a new default job
-    if (storedJobs.length === 0) {
+    if (!Array.isArray(raw) || raw.length === 0) {
       const defaultJob = createDefaultJob();
       setJobs([defaultJob]);
       saveJobs([defaultJob]);
       return;
     }
 
-    // Otherwise hydrate state from storage
-    setJobs(storedJobs);
+    // Normalize loaded items so status is typed as JobStatus
+    const normalized: JobApplication[] = raw.map((item) => {
+      // treat item as a generic record and validate each field
+      const rec = item as Record<string, unknown>;
+
+      const id =
+        typeof rec.id === "string" && rec.id.length > 0
+          ? rec.id
+          : crypto.randomUUID();
+
+      const company = typeof rec.company === "string" ? rec.company : "";
+      const position = typeof rec.position === "string" ? rec.position : "";
+
+      // ensure status is one of the allowed JobStatus values
+      const statusCandidate = typeof rec.status === "string" ? rec.status : "";
+      const status: JobStatus = STATUS_ORDER.includes(
+        statusCandidate as JobStatus,
+      )
+        ? (statusCandidate as JobStatus)
+        : "todo";
+
+      const createdAt =
+        typeof rec.createdAt === "string"
+          ? rec.createdAt
+          : new Date().toISOString();
+
+      const offerUrl =
+        typeof rec.offerUrl === "string" ? rec.offerUrl : undefined;
+
+      const notes = typeof rec.notes === "string" ? rec.notes : undefined;
+
+      return {
+        id,
+        company,
+        position,
+        status,
+        createdAt,
+        offerUrl,
+        notes,
+      } as JobApplication;
+    });
+
+    setJobs(normalized);
   }, []);
 
   // Create a new job entry from form inputs and persist
@@ -63,7 +114,6 @@ export default function Page() {
       createdAt: new Date().toISOString(),
     };
 
-    // Create new array (immutability)
     const updatedJobs = [...jobs, newJob];
 
     setJobs(updatedJobs);
@@ -76,7 +126,19 @@ export default function Page() {
   // Move job to next status in workflow and persist
   function cycleStatus(id: string) {
     const updatedJobs = jobs.map((job) =>
-      job.id === id ? { ...job, status: getNextStatus(job.status) } : job,
+      job.id === id
+        ? ({ ...job, status: getNextStatus(job.status) } as JobApplication)
+        : job,
+    );
+
+    setJobs(updatedJobs);
+    saveJobs(updatedJobs);
+  }
+
+  // Reset job status back to "todo"
+  function resetStatus(id: string) {
+    const updatedJobs = jobs.map((job) =>
+      job.id === id ? ({ ...job, status: "todo" } as JobApplication) : job,
     );
 
     setJobs(updatedJobs);
@@ -94,7 +156,7 @@ export default function Page() {
   // Update a single field while editing a row
   function updateJob(id: string, field: "company" | "position", value: string) {
     const updatedJobs = jobs.map((job) =>
-      job.id === id ? { ...job, [field]: value } : job,
+      job.id === id ? ({ ...job, [field]: value } as JobApplication) : job,
     );
 
     setJobs(updatedJobs);
@@ -178,6 +240,8 @@ export default function Page() {
                   ) : (
                     <button onClick={() => setEditingId(job.id)}>Edit</button>
                   )}
+
+                  <button onClick={() => resetStatus(job.id)}>Reset</button>
 
                   <button
                     className="danger"
