@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { loadJobs, saveJobs } from "@/lib/storage";
 import { JobApplication, JobStatus } from "@/types/job";
+import JobRow from "@/components/JobRow";
 
 // Ordered list of job statuses (business workflow)
 const STATUS_ORDER: readonly JobStatus[] = [
@@ -203,59 +204,16 @@ export default function Page() {
 
           <tbody>
             {jobs.map((job) => (
-              <tr key={job.id}>
-                <td>
-                  {editingId === job.id ? (
-                    <input
-                      value={job.company}
-                      onChange={(e) =>
-                        updateJob(job.id, "company", e.target.value)
-                      }
-                    />
-                  ) : (
-                    job.company
-                  )}
-                </td>
-
-                <td>
-                  {editingId === job.id ? (
-                    <input
-                      value={job.position}
-                      onChange={(e) =>
-                        updateJob(job.id, "position", e.target.value)
-                      }
-                    />
-                  ) : (
-                    job.position
-                  )}
-                </td>
-
-                <td className="status-cell">
-                  <span onClick={() => cycleStatus(job.id)}>{job.status}</span>
-                </td>
-
-                <td className="actions">
-                  {editingId === job.id ? (
-                    <button onClick={() => setEditingId(null)}>Save</button>
-                  ) : (
-                    <button onClick={() => setEditingId(job.id)}>Edit</button>
-                  )}
-
-                  <button onClick={() => resetStatus(job.id)}>Reset</button>
-
-                  <button
-                    className="danger"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (window.confirm("Delete this application?")) {
-                        deleteJob(job.id);
-                      }
-                    }}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
+              <JobRow
+                key={job.id}
+                job={job}
+                editingId={editingId}
+                setEditingId={setEditingId}
+                updateJob={updateJob}
+                cycleStatus={cycleStatus}
+                resetStatus={resetStatus}
+                deleteJob={deleteJob}
+              />
             ))}
           </tbody>
         </table>
