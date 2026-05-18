@@ -23,7 +23,7 @@ export default function JobRow({
   return (
     <tr>
       {/* company field (editable) */}
-      <td>
+      <td className="center">
         {editingId === job.id ? (
           <input
             value={job.company}
@@ -35,7 +35,7 @@ export default function JobRow({
       </td>
 
       {/* position field (editable) */}
-      <td>
+      <td className="center">
         {editingId === job.id ? (
           <input
             value={job.position}
@@ -47,15 +47,17 @@ export default function JobRow({
       </td>
 
       {/* status cycle */}
-      <td className="status-cell">
+      <td className="center status-cell">
         <span onClick={() => cycleStatus(job.id)}>{job.status}</span>
       </td>
 
       {/* created date */}
-      <td>{new Date(job.createdAt).toLocaleDateString()}</td>
+      <td className="center date-cell">
+        {new Date(job.createdAt).toLocaleDateString()}
+      </td>
 
       {/* actions */}
-      <td className="actions">
+      <td className="center actions">
         {/* edit / save */}
         {editingId === job.id ? (
           <button onClick={() => setEditingId(null)}>Save</button>

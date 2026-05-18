@@ -76,7 +76,6 @@ th,
 td {
   border: 1px solid #e5e7eb;
   padding: 8px 12px;
-  text-align: left;
   vertical-align: middle;
 }
 
@@ -131,6 +130,14 @@ button:hover {
 
 .status-cell {
   padding: 4px 6px;
+  text-align: center;
+}
+
+td.date-cell {
+  text-align: center;
+}
+
+.center {
   text-align: center;
 }
 

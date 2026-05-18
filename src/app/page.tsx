@@ -52,9 +52,32 @@ export default function Page() {
 
     // If no data in storage, initialize with a new default job
     if (!Array.isArray(raw) || raw.length === 0) {
-      const defaultJob = createDefaultJob();
-      setJobs([defaultJob]);
-      saveJobs([defaultJob]);
+      const defaultJobs: JobApplication[] = [
+        {
+          id: crypto.randomUUID(),
+          company: "Compagny1",
+          position: "Frontend Developer",
+          status: "todo",
+          createdAt: new Date("2024-01-01").toISOString(),
+        },
+        {
+          id: crypto.randomUUID(),
+          company: "Compagny2",
+          position: "Backend Engineer",
+          status: "applied",
+          createdAt: new Date("2025-01-02").toISOString(),
+        },
+        {
+          id: crypto.randomUUID(),
+          company: "Compagny3",
+          position: "Fullstack Developer",
+          status: "interview",
+          createdAt: new Date("2026-03-03").toISOString(),
+        },
+      ];
+
+      setJobs(defaultJobs);
+      saveJobs(defaultJobs);
       return;
     }
 
@@ -164,6 +187,13 @@ export default function Page() {
     saveJobs(updatedJobs);
   }
 
+  // Sort jobs by date
+  const sortedJobs = [...jobs].sort((a, b) => {
+    const da = new Date(a.createdAt).getTime();
+    const db = new Date(b.createdAt).getTime();
+    return db - da; // récent → ancien
+  });
+
   return (
     <main className="conteneur">
       <h1 className="main-title">Job tracker</h1>
@@ -198,12 +228,13 @@ export default function Page() {
               <th>Company</th>
               <th>Position</th>
               <th>Status</th>
+              <th>Date</th>
               <th></th>
             </tr>
           </thead>
 
           <tbody>
-            {jobs.map((job) => (
+            {sortedJobs.map((job) => (
               <JobRow
                 key={job.id}
                 job={job}
