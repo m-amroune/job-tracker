@@ -46,6 +46,9 @@ export default function Page() {
   // Id of the row currently being edited (null = no edit mode)
   const [editingId, setEditingId] = useState<string | null>(null);
 
+  // sort direction for date column
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+
   // Load jobs on first render
   useEffect(() => {
     const raw = loadJobs();
@@ -187,11 +190,12 @@ export default function Page() {
     saveJobs(updatedJobs);
   }
 
-  // Sort jobs by date
+  // sort jobs by date (asc or desc)
   const sortedJobs = [...jobs].sort((a, b) => {
     const da = new Date(a.createdAt).getTime();
     const db = new Date(b.createdAt).getTime();
-    return db - da; // récent → ancien
+
+    return sortDir === "desc" ? db - da : da - db;
   });
 
   return (
@@ -228,8 +232,12 @@ export default function Page() {
               <th>Company</th>
               <th>Position</th>
               <th>Status</th>
-              <th>Date</th>
-              <th></th>
+              <th
+                onClick={() => setSortDir(sortDir === "desc" ? "asc" : "desc")}
+                style={{ cursor: "pointer" }}
+              >
+                Date {sortDir === "desc" ? "▼" : "▲"}
+              </th>
             </tr>
           </thead>
 
