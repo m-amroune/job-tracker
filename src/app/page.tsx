@@ -24,17 +24,6 @@ function getNextStatus(current: JobStatus): JobStatus {
   return STATUS_ORDER[index + 1];
 }
 
-// Generate a fresh default job entry (avoids creating a static ID at module load)
-function createDefaultJob(): JobApplication {
-  return {
-    id: crypto.randomUUID(),
-    company: "Example company",
-    position: "Frontend Developer",
-    status: "todo",
-    createdAt: new Date().toISOString(),
-  };
-}
-
 export default function Page() {
   // Stored job applications (hydrated from localStorage)
   const [jobs, setJobs] = useState<JobApplication[]>([]);
@@ -46,8 +35,17 @@ export default function Page() {
   // Id of the row currently being edited (null = no edit mode)
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  // sort direction for date column
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  // allowed keys for sorting
+  type SortKey = "company" | "position" | "status" | "createdAt";
+
+  // sort settings for table columns
+  const [sortConfig, setSortConfig] = useState<{
+    key: SortKey;
+    dir: "asc" | "desc";
+  }>({
+    key: "createdAt",
+    dir: "desc",
+  });
 
   // Load jobs on first render
   useEffect(() => {
@@ -190,12 +188,27 @@ export default function Page() {
     saveJobs(updatedJobs);
   }
 
-  // sort jobs by date (asc or desc)
-  const sortedJobs = [...jobs].sort((a, b) => {
-    const da = new Date(a.createdAt).getTime();
-    const db = new Date(b.createdAt).getTime();
+  // update sort settings when clicking a column
+  function handleSort(key: SortKey) {
+    setSortConfig((prev) => ({
+      key,
+      dir: prev.key === key && prev.dir === "asc" ? "desc" : "asc",
+    }));
+  }
 
-    return sortDir === "desc" ? db - da : da - db;
+  // sort jobs by selected column
+  const sortedJobs = [...jobs].sort((a, b) => {
+    const key = sortConfig.key;
+    const dir = sortConfig.dir === "asc" ? 1 : -1;
+
+    if (key === "createdAt") {
+      const da = new Date(a.createdAt).getTime();
+      const db = new Date(b.createdAt).getTime();
+      return (da - db) * dir;
+    }
+
+    // string comparison for company, position, status
+    return a[key].localeCompare(b[key]) * dir;
   });
 
   return (
@@ -229,15 +242,55 @@ export default function Page() {
         <table>
           <thead>
             <tr>
-              <th>Company</th>
-              <th>Position</th>
-              <th>Status</th>
               <th
-                onClick={() => setSortDir(sortDir === "desc" ? "asc" : "desc")}
+                onClick={() => handleSort("company")}
                 style={{ cursor: "pointer" }}
               >
-                Date {sortDir === "desc" ? "▼" : "▲"}
+                Company{" "}
+                {sortConfig.key === "company"
+                  ? sortConfig.dir === "asc"
+                    ? "▲"
+                    : "▼"
+                  : ""}
               </th>
+
+              <th
+                onClick={() => handleSort("position")}
+                style={{ cursor: "pointer" }}
+              >
+                Position{" "}
+                {sortConfig.key === "position"
+                  ? sortConfig.dir === "asc"
+                    ? "▲"
+                    : "▼"
+                  : ""}
+              </th>
+
+              <th
+                onClick={() => handleSort("status")}
+                style={{ cursor: "pointer" }}
+              >
+                Status{" "}
+                {sortConfig.key === "status"
+                  ? sortConfig.dir === "asc"
+                    ? "▲"
+                    : "▼"
+                  : ""}
+              </th>
+
+              <th
+                onClick={() => handleSort("createdAt")}
+                style={{ cursor: "pointer" }}
+              >
+                Date{" "}
+                {sortConfig.key === "createdAt"
+                  ? sortConfig.dir === "asc"
+                    ? "▲"
+                    : "▼"
+                  : ""}
+              </th>
+
+              <th>Actions</th>
             </tr>
           </thead>
 
