@@ -47,6 +47,9 @@ export default function Page() {
     dir: "desc",
   });
 
+  // search query for filtering jobs
+  const [search, setSearch] = useState("");
+
   // Load jobs on first render
   useEffect(() => {
     const raw = loadJobs();
@@ -196,8 +199,17 @@ export default function Page() {
     }));
   }
 
+  // filter jobs by search query (company + position)
+  const filteredJobs = jobs.filter((job) => {
+    const q = search.toLowerCase();
+    return (
+      job.company.toLowerCase().includes(q) ||
+      job.position.toLowerCase().includes(q)
+    );
+  });
+
   // sort jobs by selected column
-  const sortedJobs = [...jobs].sort((a, b) => {
+  const sortedJobs = [...filteredJobs].sort((a, b) => {
     const key = sortConfig.key;
     const dir = sortConfig.dir === "asc" ? 1 : -1;
 
@@ -235,6 +247,13 @@ export default function Page() {
 
         <button onClick={addJob}>Add</button>
       </div>
+      <input
+        type="text"
+        placeholder="Search company or position..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="border px-2 py-1 rounded mb-4 w-full"
+      />
 
       {jobs.length === 0 ? (
         <p>No applications yet</p>
