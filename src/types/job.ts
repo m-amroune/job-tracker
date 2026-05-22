@@ -8,5 +8,5 @@ export interface JobApplication {
   status: JobStatus;
   createdAt: string;
   offerUrl?: string;
-  notes?: string;
+  url?: string;
 }

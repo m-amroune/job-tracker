@@ -255,7 +255,7 @@ export default function Page() {
         className="border px-2 py-1 rounded mb-4 w-full"
       />
 
-      {jobs.length === 0 ? (
+      {sortedJobs.length === 0 ? (
         <p>No applications yet</p>
       ) : (
         <table>
@@ -308,6 +308,7 @@ export default function Page() {
                     : "▼"
                   : ""}
               </th>
+              <th>Details</th>
 
               <th>Actions</th>
             </tr>

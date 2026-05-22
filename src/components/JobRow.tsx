@@ -55,6 +55,11 @@ export default function JobRow({
       <td className="center date-cell">
         {new Date(job.createdAt).toLocaleDateString()}
       </td>
+      <td className="center">
+        <a href={job.url} target="_blank" rel="noopener noreferrer">
+          View
+        </a>
+      </td>
 
       {/* actions */}
       <td className="center actions">
