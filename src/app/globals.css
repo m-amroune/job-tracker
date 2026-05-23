@@ -113,6 +113,21 @@ td input {
   box-sizing: border-box;
 }
 
+.offers-counter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.offers-counter strong {
+  background: #f3f3f3;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
 button {
   padding: 8px 14px;
   background-color: #3b82f6;
@@ -146,6 +161,17 @@ td.date-cell {
   text-align: center;
   white-space: nowrap;
   max-width: 120px;
+}
+
+td.actions {
+  min-width: 250px;
+}
+
+.action-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
 }
 
 .actions button {

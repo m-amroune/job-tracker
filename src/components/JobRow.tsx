@@ -63,28 +63,30 @@ export default function JobRow({
 
       {/* actions */}
       <td className="center actions">
-        {/* edit / save */}
-        {editingId === job.id ? (
-          <button onClick={() => setEditingId(null)}>Save</button>
-        ) : (
-          <button onClick={() => setEditingId(job.id)}>Edit</button>
-        )}
+        <div className="action-wrapper">
+          {/* edit / save */}
+          {editingId === job.id ? (
+            <button onClick={() => setEditingId(null)}>Save</button>
+          ) : (
+            <button onClick={() => setEditingId(job.id)}>Edit</button>
+          )}
 
-        {/* reset status */}
-        <button onClick={() => resetStatus(job.id)}>Reset</button>
+          {/* reset status */}
+          <button onClick={() => resetStatus(job.id)}>Reset</button>
 
-        {/* delete job */}
-        <button
-          className="danger"
-          onClick={(e) => {
-            e.stopPropagation();
-            if (window.confirm("Delete this application?")) {
-              deleteJob(job.id);
-            }
-          }}
-        >
-          Delete
-        </button>
+          {/* delete job */}
+          <button
+            className="danger"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (window.confirm("Delete this application?")) {
+                deleteJob(job.id);
+              }
+            }}
+          >
+            Delete
+          </button>
+        </div>
       </td>
     </tr>
   );

@@ -254,6 +254,31 @@ export default function Page() {
         onChange={(e) => setSearch(e.target.value)}
         className="border px-2 py-1 rounded mb-4 w-full"
       />
+      <div
+        className="offers-counter"
+        style={{
+          marginTop: "1.5rem",
+          marginBottom: "0.8rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          fontSize: "1rem",
+          fontWeight: 600,
+          color: "#222",
+        }}
+      >
+        <span>Total applications:</span>
+        <span
+          style={{
+            background: "#e5e7eb",
+            padding: "4px 12px",
+            borderRadius: "6px",
+            fontWeight: 700,
+          }}
+        >
+          {jobs.length}
+        </span>
+      </div>
 
       {sortedJobs.length === 0 ? (
         <p>No applications yet</p>
