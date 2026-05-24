@@ -50,6 +50,9 @@ export default function Page() {
   // search query for filtering jobs
   const [search, setSearch] = useState("");
 
+  // filter by status
+  const [statusFilter, setStatusFilter] = useState<JobStatus | "all">("all");
+
   // Load jobs on first render
   useEffect(() => {
     const raw = loadJobs();
@@ -199,13 +202,19 @@ export default function Page() {
     }));
   }
 
-  // filter jobs by search query (company + position)
+  // filter by search (company + position) and status
+
   const filteredJobs = jobs.filter((job) => {
     const q = search.toLowerCase();
-    return (
+
+    const matchesSearch =
       job.company.toLowerCase().includes(q) ||
-      job.position.toLowerCase().includes(q)
-    );
+      job.position.toLowerCase().includes(q);
+
+    const matchesStatus =
+      statusFilter === "all" ? true : job.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
   });
 
   // sort jobs by selected column
@@ -254,6 +263,24 @@ export default function Page() {
         onChange={(e) => setSearch(e.target.value)}
         className="border px-2 py-1 rounded mb-4 w-full"
       />
+
+      <select
+        value={statusFilter}
+        onChange={(e) => setStatusFilter(e.target.value as JobStatus | "all")}
+        style={{
+          marginTop: "0.5rem",
+          marginBottom: "1rem",
+          padding: "6px 10px",
+          borderRadius: "6px",
+          border: "1px solid #ccc",
+        }}
+      >
+        <option value="all">All statuses</option>
+        <option value="todo">Todo</option>
+        <option value="applied">Applied</option>
+        <option value="interview">Interview</option>
+        <option value="rejected">Rejected</option>
+      </select>
       <div
         className="offers-counter"
         style={{
