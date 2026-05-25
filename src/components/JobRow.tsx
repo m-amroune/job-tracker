@@ -5,7 +5,11 @@ interface JobRowProps {
   job: JobApplication;
   editingId: string | null;
   setEditingId: (id: string | null) => void;
-  updateJob: (id: string, field: "company" | "position", value: string) => void;
+  updateJob: (
+    id: string,
+    field: "company" | "position" | "offerUrl",
+    value: string,
+  ) => void;
   cycleStatus: (id: string) => void;
   resetStatus: (id: string) => void;
   deleteJob: (id: string) => void;
@@ -55,8 +59,15 @@ export default function JobRow({
       <td className="center date-cell">
         {new Date(job.createdAt).toLocaleDateString()}
       </td>
+
+      {/* offer URL  */}
       <td className="center">
-        {job.offerUrl && job.offerUrl.trim() !== "" ? (
+        {editingId === job.id ? (
+          <input
+            value={job.offerUrl ?? ""}
+            onChange={(e) => updateJob(job.id, "offerUrl", e.target.value)}
+          />
+        ) : job.offerUrl ? (
           <a href={job.offerUrl} target="_blank" rel="noopener noreferrer">
             View
           </a>
@@ -68,17 +79,14 @@ export default function JobRow({
       {/* actions */}
       <td className="center actions">
         <div className="action-wrapper">
-          {/* edit / save */}
           {editingId === job.id ? (
             <button onClick={() => setEditingId(null)}>Save</button>
           ) : (
             <button onClick={() => setEditingId(job.id)}>Edit</button>
           )}
 
-          {/* reset status */}
           <button onClick={() => resetStatus(job.id)}>Reset</button>
 
-          {/* delete job */}
           <button
             className="danger"
             onClick={(e) => {

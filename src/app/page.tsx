@@ -192,7 +192,11 @@ export default function Page() {
   }
 
   // Update a single field while editing a row
-  function updateJob(id: string, field: "company" | "position", value: string) {
+  function updateJob(
+    id: string,
+    field: "company" | "position" | "offerUrl",
+    value: string,
+  ) {
     const updatedJobs = jobs.map((job) =>
       job.id === id ? ({ ...job, [field]: value } as JobApplication) : job,
     );
