@@ -32,6 +32,8 @@ export default function Page() {
   const [company, setCompany] = useState("");
   const [position, setPosition] = useState("");
 
+  const [offerUrl, setOfferUrl] = useState("");
+
   // Id of the row currently being edited (null = no edit mode)
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -66,6 +68,7 @@ export default function Page() {
           position: "Frontend Developer",
           status: "todo",
           createdAt: new Date("2024-01-01").toISOString(),
+          offerUrl: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
         },
         {
           id: crypto.randomUUID(),
@@ -73,6 +76,7 @@ export default function Page() {
           position: "Backend Engineer",
           status: "applied",
           createdAt: new Date("2025-01-02").toISOString(),
+          offerUrl: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
         },
         {
           id: crypto.randomUUID(),
@@ -80,6 +84,7 @@ export default function Page() {
           position: "Fullstack Developer",
           status: "interview",
           createdAt: new Date("2026-03-03").toISOString(),
+          offerUrl: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
         },
       ];
 
@@ -141,6 +146,7 @@ export default function Page() {
       id: crypto.randomUUID(),
       company: company.trim(),
       position: position.trim(),
+      offerUrl: offerUrl.trim() || undefined,
       status: "todo",
       createdAt: new Date().toISOString(),
     };
@@ -152,6 +158,7 @@ export default function Page() {
 
     setCompany("");
     setPosition("");
+    setOfferUrl("");
   }
 
   // Move job to next status in workflow and persist
@@ -254,8 +261,16 @@ export default function Page() {
           onChange={(e) => setPosition(e.target.value)}
         />
 
+        <input
+          type="text"
+          placeholder="Offer URL"
+          value={offerUrl}
+          onChange={(e) => setOfferUrl(e.target.value)}
+        />
+
         <button onClick={addJob}>Add</button>
       </div>
+
       <input
         type="text"
         placeholder="Search company or position..."

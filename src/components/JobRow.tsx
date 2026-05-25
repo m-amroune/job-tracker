@@ -56,9 +56,13 @@ export default function JobRow({
         {new Date(job.createdAt).toLocaleDateString()}
       </td>
       <td className="center">
-        <a href={job.url} target="_blank" rel="noopener noreferrer">
-          View
-        </a>
+        {job.offerUrl && job.offerUrl.trim() !== "" ? (
+          <a href={job.offerUrl} target="_blank" rel="noopener noreferrer">
+            View
+          </a>
+        ) : (
+          <span>No link</span>
+        )}
       </td>
 
       {/* actions */}
