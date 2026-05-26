@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { loadJobs, saveJobs } from "@/lib/storage";
 import { JobApplication, JobStatus } from "@/types/job";
-import JobRow from "@/components/JobRow";
+import JobTable from "@/components/JobTable";
 
 // Ordered list of job statuses (business workflow)
 const STATUS_ORDER: readonly JobStatus[] = [
@@ -205,14 +205,6 @@ export default function Page() {
     saveJobs(updatedJobs);
   }
 
-  // update sort settings when clicking a column
-  function handleSort(key: SortKey) {
-    setSortConfig((prev) => ({
-      key,
-      dir: prev.key === key && prev.dir === "asc" ? "desc" : "asc",
-    }));
-  }
-
   // filter by search (company + position) and status
 
   const filteredJobs = jobs.filter((job) => {
@@ -329,77 +321,17 @@ export default function Page() {
       {sortedJobs.length === 0 ? (
         <p>No applications yet</p>
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th
-                onClick={() => handleSort("company")}
-                style={{ cursor: "pointer" }}
-              >
-                Company{" "}
-                {sortConfig.key === "company"
-                  ? sortConfig.dir === "asc"
-                    ? "▲"
-                    : "▼"
-                  : ""}
-              </th>
-
-              <th
-                onClick={() => handleSort("position")}
-                style={{ cursor: "pointer" }}
-              >
-                Position{" "}
-                {sortConfig.key === "position"
-                  ? sortConfig.dir === "asc"
-                    ? "▲"
-                    : "▼"
-                  : ""}
-              </th>
-
-              <th
-                onClick={() => handleSort("status")}
-                style={{ cursor: "pointer" }}
-              >
-                Status{" "}
-                {sortConfig.key === "status"
-                  ? sortConfig.dir === "asc"
-                    ? "▲"
-                    : "▼"
-                  : ""}
-              </th>
-
-              <th
-                onClick={() => handleSort("createdAt")}
-                style={{ cursor: "pointer" }}
-              >
-                Date{" "}
-                {sortConfig.key === "createdAt"
-                  ? sortConfig.dir === "asc"
-                    ? "▲"
-                    : "▼"
-                  : ""}
-              </th>
-              <th>Details</th>
-
-              <th>Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {sortedJobs.map((job) => (
-              <JobRow
-                key={job.id}
-                job={job}
-                editingId={editingId}
-                setEditingId={setEditingId}
-                updateJob={updateJob}
-                cycleStatus={cycleStatus}
-                resetStatus={resetStatus}
-                deleteJob={deleteJob}
-              />
-            ))}
-          </tbody>
-        </table>
+        <JobTable
+          jobs={sortedJobs}
+          sortConfig={sortConfig}
+          setSortConfig={setSortConfig}
+          editingId={editingId}
+          setEditingId={setEditingId}
+          updateJob={updateJob}
+          cycleStatus={cycleStatus}
+          resetStatus={resetStatus}
+          deleteJob={deleteJob}
+        />
       )}
     </main>
   );
