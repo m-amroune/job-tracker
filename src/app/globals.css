@@ -210,3 +210,19 @@ td.actions {
 .actions .danger:hover {
   background-color: #dc2626;
 }
+
+.empty-state {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: #f9fafb;
+  text-align: center;
+  color: #4b5563;
+}
+
+.empty-state p:first-child {
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+  color: #111827;
+}

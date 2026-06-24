@@ -316,7 +316,21 @@ export default function Page() {
       </div>
 
       {sortedJobs.length === 0 ? (
-        <p>No applications yet</p>
+        <div className="empty-state">
+          {jobs.length === 0 ? (
+            <>
+              <p>No applications yet.</p>
+              <p>
+                Add your first job application to start tracking your search.
+              </p>
+            </>
+          ) : (
+            <>
+              <p>No matching applications.</p>
+              <p>Try changing your search or status filter.</p>
+            </>
+          )}
+        </div>
       ) : (
         <JobTable
           jobs={sortedJobs}
