@@ -59,37 +59,34 @@ export default function Page() {
   useEffect(() => {
     const raw = loadJobs();
 
-    // If no data in storage, initialize with a new default job
+    // // If storage is empty, initialize with demo jobs
     if (!Array.isArray(raw) || raw.length === 0) {
-      const defaultJobs: JobApplication[] = [
+      const DEFAULT_JOBS: JobApplication[] = [
         {
           id: crypto.randomUUID(),
-          company: "Compagny1",
+          company: "Nova Digital",
           position: "Frontend Developer",
           status: "todo",
-          createdAt: new Date("2024-01-01").toISOString(),
-          offerUrl: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
+          createdAt: "2026-02-03T09:00:00.000Z",
         },
         {
           id: crypto.randomUUID(),
-          company: "Compagny2",
-          position: "Backend Engineer",
+          company: "Dream startup",
+          position: "React Developer",
           status: "applied",
-          createdAt: new Date("2025-01-02").toISOString(),
-          offerUrl: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
+          createdAt: "2025-02-06T14:30:00.000Z",
         },
         {
           id: crypto.randomUUID(),
-          company: "Compagny3",
-          position: "Fullstack Developer",
+          company: "Tech agency",
+          position: "Next.js Developer",
           status: "interview",
-          createdAt: new Date("2026-03-03").toISOString(),
-          offerUrl: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
+          createdAt: "2026-02-10T11:15:00.000Z",
         },
       ];
 
-      setJobs(defaultJobs);
-      saveJobs(defaultJobs);
+      setJobs(DEFAULT_JOBS);
+      saveJobs(DEFAULT_JOBS);
       return;
     }
 
@@ -264,7 +261,7 @@ export default function Page() {
           onChange={(e) => setOfferUrl(e.target.value)}
         />
 
-        <button onClick={addJob}>Add</button>
+        <button onClick={addJob}>Add application</button>
       </div>
 
       <input
