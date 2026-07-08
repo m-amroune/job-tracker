@@ -154,8 +154,30 @@ thead th {
   background-color: var(--soft);
   color: #374151;
   font-weight: 700;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
+}
+
+.search-input {
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.status-filter {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+}
+
+.counter-badge {
+  background: #e5e7eb;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-weight: 700;
 }
 
 th,

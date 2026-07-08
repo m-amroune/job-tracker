@@ -236,10 +236,7 @@ export default function Page() {
     <main className="conteneur">
       <h1 className="main-title">Job tracker</h1>
 
-      <div
-        className="form-row"
-        style={{ marginTop: "1rem", marginBottom: "1rem" }}
-      >
+      <div className="form-row">
         <input
           type="text"
           placeholder="Company"
@@ -269,19 +266,13 @@ export default function Page() {
         placeholder="Search company or position..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="border px-2 py-1 rounded mb-4 w-full"
+        className="search-input"
       />
 
       <select
         value={statusFilter}
         onChange={(e) => setStatusFilter(e.target.value as JobStatus | "all")}
-        style={{
-          marginTop: "0.5rem",
-          marginBottom: "1rem",
-          padding: "6px 10px",
-          borderRadius: "6px",
-          border: "1px solid #ccc",
-        }}
+        className="status-filter"
       >
         <option value="all">All statuses</option>
         <option value="todo">Todo</option>
@@ -303,16 +294,7 @@ export default function Page() {
         }}
       >
         <span>Total applications:</span>
-        <span
-          style={{
-            background: "#e5e7eb",
-            padding: "4px 12px",
-            borderRadius: "6px",
-            fontWeight: 700,
-          }}
-        >
-          {jobs.length}
-        </span>
+        <span className="counter-badge">{jobs.length}</span>
       </div>
 
       {sortedJobs.length === 0 ? (
