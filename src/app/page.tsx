@@ -234,7 +234,9 @@ export default function Page() {
 
   return (
     <main className="conteneur">
-      <h1 className="main-title">Job tracker</h1>
+      <header className="page-header">
+        <h1 className="main-title">Job Tracker</h1>
+      </header>
 
       <div className="form-row">
         <input
@@ -261,41 +263,36 @@ export default function Page() {
         <button onClick={addJob}>Add application</button>
       </div>
 
-      <input
-        type="text"
-        placeholder="Search company or position..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="search-input"
-      />
+      <section className="tracker-toolbar">
+        <div className="filters-group">
+          <input
+            type="text"
+            placeholder="Search company or position..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="search-input"
+          />
 
-      <select
-        value={statusFilter}
-        onChange={(e) => setStatusFilter(e.target.value as JobStatus | "all")}
-        className="status-filter"
-      >
-        <option value="all">All statuses</option>
-        <option value="todo">Todo</option>
-        <option value="applied">Applied</option>
-        <option value="interview">Interview</option>
-        <option value="rejected">Rejected</option>
-      </select>
-      <div
-        className="offers-counter"
-        style={{
-          marginTop: "1.5rem",
-          marginBottom: "0.8rem",
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-          fontSize: "1rem",
-          fontWeight: 600,
-          color: "#222",
-        }}
-      >
-        <span>Total applications:</span>
-        <span className="counter-badge">{jobs.length}</span>
-      </div>
+          <select
+            value={statusFilter}
+            onChange={(e) =>
+              setStatusFilter(e.target.value as JobStatus | "all")
+            }
+            className="status-filter"
+          >
+            <option value="all">All statuses</option>
+            <option value="todo">Todo</option>
+            <option value="applied">Applied</option>
+            <option value="interview">Interview</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+
+        <div className="offers-counter">
+          <span>Total applications</span>
+          <strong>{jobs.length}</strong>
+        </div>
+      </section>
 
       {sortedJobs.length === 0 ? (
         <div className="empty-state">

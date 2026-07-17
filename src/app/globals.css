@@ -1,14 +1,14 @@
 :root {
-  --background: #f4f6f8;
+  background: #f7f3ee;
   --foreground: #111827;
   --card: #ffffff;
-  --border: #e5e7eb;
+  --border: #e7ded4;
   --muted: #6b7280;
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
   --danger: #dc2626;
   --danger-hover: #b91c1c;
-  --soft: #f9fafb;
+  --soft: #fcf9f5;
 }
 
 html,
@@ -47,12 +47,19 @@ a {
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
 }
 
-.main-title {
-  font-size: 2rem;
-  font-weight: 700;
+.page-header {
   margin-bottom: 1.5rem;
-  text-align: center;
-  letter-spacing: -0.03em;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.main-title {
+  margin-bottom: 0;
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  text-align: left;
 }
 
 .form-row {
@@ -138,6 +145,53 @@ button:active {
   font-size: 0.9rem;
 }
 
+.tracker-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0 1rem;
+}
+
+.filters-group {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 225px;
+  gap: 1rem;
+}
+
+.search-input,
+.status-filter,
+.tracker-toolbar .offers-counter {
+  width: 100%;
+  height: 44px;
+  margin: 0;
+}
+
+.search-input {
+  min-width: 0;
+}
+
+.status-filter {
+  padding: 9px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.tracker-toolbar .offers-counter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-width: 250px;
+  padding: 0 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  color: #374151;
+  white-space: nowrap;
+}
+
 table {
   width: 100%;
   border-collapse: separate;
@@ -156,21 +210,6 @@ thead th {
   font-weight: 700;
   text-align: center;
   cursor: pointer;
-}
-
-.search-input {
-  width: 100%;
-  margin-top: 1rem;
-  margin-bottom: 0.75rem;
-}
-
-.status-filter {
-  margin-top: 0.5rem;
-  margin-bottom: 1rem;
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  background: #ffffff;
 }
 
 .counter-badge {
