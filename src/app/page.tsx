@@ -238,6 +238,7 @@ export default function Page() {
         <h1 className="main-title">Job Tracker</h1>
       </header>
 
+      <h2 className="section-title">New application</h2>
       <div className="form-row">
         <input
           type="text"
@@ -262,6 +263,8 @@ export default function Page() {
 
         <button onClick={addJob}>Add application</button>
       </div>
+
+      <h2 className="section-title applications-title">Applications</h2>
 
       <section className="tracker-toolbar">
         <div className="filters-group">

@@ -21,7 +21,9 @@ body {
   min-height: 100vh;
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:
+  Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+  sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -60,6 +62,17 @@ a {
   line-height: 1.1;
   letter-spacing: -0.04em;
   text-align: left;
+}
+
+.section-title {
+  margin-bottom: 0.65rem;
+  color: #374151;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.applications-title {
+  margin-top: 1.75rem;
 }
 
 .form-row {
@@ -150,7 +163,7 @@ button:active {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 1rem;
-  margin: 1.5rem 0 1rem;
+  margin: 0.65rem 0 1rem;
 }
 
 .filters-group {
@@ -243,17 +256,35 @@ td input {
   text-align: center;
 }
 
-.status-cell span {
+.status-badge {
   display: inline-flex;
   justify-content: center;
   min-width: 86px;
   padding: 5px 10px;
   border-radius: 999px;
-  background: #eef2ff;
-  color: #3730a3;
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
+}
+
+.status-todo {
+  background: #f1f3f5;
+  color: #495057;
+}
+
+.status-applied {
+  background: #edf4ff;
+  color: #2f5fb3;
+}
+
+.status-interview {
+  background: #fff4dd;
+  color: #946200;
+}
+
+.status-rejected {
+  background: #fff0ee;
+  color: #a33227;
 }
 
 td.date-cell {
@@ -289,22 +320,33 @@ td.actions {
   font-size: 0.84rem;
 }
 
-.actions button:first-child {
-  background-color: #e5e7eb;
-  color: #111827;
+.actions .action-secondary {
+  background-color: #eceff3;
+  color: #1f2937;
 }
 
-.actions button:first-child:hover {
-  background-color: #d1d5db;
+.actions .action-secondary:hover {
+  background-color: #dfe3e8;
+}
+
+.actions .action-reset {
+  background-color: #ffffff;
+  color: var(--primary);
+  border: 1px solid #b9c8f4;
+}
+
+.actions .action-reset:hover {
+  background-color: #f3f6ff;
 }
 
 .actions .danger {
-  background-color: var(--danger);
-  color: white;
+  background-color: #fff4f2;
+  color: #b42318;
+  border: 1px solid #f2c4bf;
 }
 
 .actions .danger:hover {
-  background-color: var(--danger-hover);
+  background-color: #fee9e7;
 }
 
 .empty-state {

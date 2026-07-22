@@ -52,7 +52,12 @@ export default function JobRow({
 
       {/* status cycle */}
       <td className="center status-cell">
-        <span onClick={() => cycleStatus(job.id)}>{job.status}</span>
+        <span
+          className={`status-badge status-${job.status}`}
+          onClick={() => cycleStatus(job.id)}
+        >
+          {job.status}
+        </span>
       </td>
 
       {/* created date */}
@@ -80,17 +85,30 @@ export default function JobRow({
       <td className="center actions">
         <div className="action-wrapper">
           {editingId === job.id ? (
-            <button onClick={() => setEditingId(null)}>Save</button>
+            <button
+              className="action-secondary"
+              onClick={() => setEditingId(null)}
+            >
+              Save
+            </button>
           ) : (
-            <button onClick={() => setEditingId(job.id)}>Edit</button>
+            <button
+              className="action-secondary"
+              onClick={() => setEditingId(job.id)}
+            >
+              Edit
+            </button>
           )}
 
-          <button onClick={() => resetStatus(job.id)}>Reset</button>
+          <button className="action-reset" onClick={() => resetStatus(job.id)}>
+            Reset
+          </button>
 
           <button
             className="danger"
             onClick={(e) => {
               e.stopPropagation();
+
               if (window.confirm("Delete this application?")) {
                 deleteJob(job.id);
               }
