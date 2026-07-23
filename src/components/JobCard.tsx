@@ -36,17 +36,13 @@ export default function JobCard({
               <input
                 aria-label="Company"
                 value={job.company}
-                onChange={(e) =>
-                  updateJob(job.id, "company", e.target.value)
-                }
+                onChange={(e) => updateJob(job.id, "company", e.target.value)}
               />
 
               <input
                 aria-label="Position"
                 value={job.position}
-                onChange={(e) =>
-                  updateJob(job.id, "position", e.target.value)
-                }
+                onChange={(e) => updateJob(job.id, "position", e.target.value)}
               />
             </>
           ) : (
@@ -58,7 +54,9 @@ export default function JobCard({
         </div>
 
         <button
+          type="button"
           className={`status-badge status-${job.status}`}
+          aria-label={`Change status for ${job.company}. Current status: ${job.status}`}
           onClick={() => cycleStatus(job.id)}
         >
           {job.status}
@@ -78,9 +76,7 @@ export default function JobCard({
             <input
               aria-label="Offer URL"
               value={job.offerUrl ?? ""}
-              onChange={(e) =>
-                updateJob(job.id, "offerUrl", e.target.value)
-              }
+              onChange={(e) => updateJob(job.id, "offerUrl", e.target.value)}
             />
           ) : job.offerUrl ? (
             <a href={job.offerUrl} target="_blank" rel="noopener noreferrer">
@@ -109,10 +105,7 @@ export default function JobCard({
           </button>
         )}
 
-        <button
-          className="action-reset"
-          onClick={() => resetStatus(job.id)}
-        >
+        <button className="action-reset" onClick={() => resetStatus(job.id)}>
           Reset
         </button>
 

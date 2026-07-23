@@ -30,6 +30,7 @@ export default function JobRow({
       <td className="center">
         {editingId === job.id ? (
           <input
+            aria-label={`Company for ${job.position}`}
             value={job.company}
             onChange={(e) => updateJob(job.id, "company", e.target.value)}
           />
@@ -42,6 +43,7 @@ export default function JobRow({
       <td className="center">
         {editingId === job.id ? (
           <input
+            aria-label={`Position at ${job.company}`}
             value={job.position}
             onChange={(e) => updateJob(job.id, "position", e.target.value)}
           />
@@ -52,12 +54,14 @@ export default function JobRow({
 
       {/* status cycle */}
       <td className="center status-cell">
-        <span
+        <button
+          type="button"
           className={`status-badge status-${job.status}`}
+          aria-label={`Change status for ${job.company}. Current status: ${job.status}`}
           onClick={() => cycleStatus(job.id)}
         >
           {job.status}
-        </span>
+        </button>
       </td>
 
       {/* created date */}
@@ -69,6 +73,7 @@ export default function JobRow({
       <td className="center">
         {editingId === job.id ? (
           <input
+          aria-label={`Offer URL for ${job.company}`}
             value={job.offerUrl ?? ""}
             onChange={(e) => updateJob(job.id, "offerUrl", e.target.value)}
           />
