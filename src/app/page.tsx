@@ -314,17 +314,19 @@ export default function Page() {
           )}
         </div>
       ) : (
-        <JobTable
-          jobs={sortedJobs}
-          sortConfig={sortConfig}
-          setSortConfig={setSortConfig}
-          editingId={editingId}
-          setEditingId={setEditingId}
-          updateJob={updateJob}
-          cycleStatus={cycleStatus}
-          resetStatus={resetStatus}
-          deleteJob={deleteJob}
-        />
+        <div className="table-scroll">
+          <JobTable
+            jobs={sortedJobs}
+            sortConfig={sortConfig}
+            setSortConfig={setSortConfig}
+            editingId={editingId}
+            setEditingId={setEditingId}
+            updateJob={updateJob}
+            cycleStatus={cycleStatus}
+            resetStatus={resetStatus}
+            deleteJob={deleteJob}
+          />
+        </div>
       )}
     </main>
   );

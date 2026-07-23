@@ -1,5 +1,5 @@
 :root {
-  background: #f7f3ee;
+  --background: #f7f3ee;
   --foreground: #111827;
   --card: #ffffff;
   --border: #e7ded4;
@@ -258,15 +258,17 @@ td input {
 
 .status-badge {
   display: inline-flex;
+  align-items: center;
   justify-content: center;
   min-width: 86px;
+  min-height: 32px;
   padding: 5px 10px;
   border-radius: 999px;
   font-size: 0.85rem;
   font-weight: 700;
+  line-height: 1;
   cursor: pointer;
 }
-
 .status-todo {
   background: #f1f3f5;
   color: #495057;
@@ -286,6 +288,12 @@ td input {
   background: #fff0ee;
   color: #a33227;
 }
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
 
 td.date-cell {
   text-align: center;
@@ -365,6 +373,98 @@ td.actions {
   color: #111827;
 }
 
+.desktop-table {
+  display: block;
+}
+
+.mobile-cards {
+  display: none;
+}
+
+.job-card {
+  padding: 1rem;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+}
+
+.job-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.job-card-main {
+  display: grid;
+  flex: 1;
+  gap: 0.5rem;
+}
+
+.job-card-main h3 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.job-card-main p {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.job-card-details {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.job-card-details > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.job-card-label {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: default;
+}
+
+.job-card-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.job-card-actions button {
+  min-width: 0;
+  min-height: 38px;
+}
+
+.job-card-actions .action-secondary {
+  background-color: #eceff3;
+  color: #1f2937;
+}
+
+.job-card-actions .action-reset {
+  background-color: #ffffff;
+  color: var(--primary);
+  border: 1px solid #b9c8f4;
+}
+
+.job-card-actions .danger {
+  background-color: #fff4f2;
+  color: #b42318;
+  border: 1px solid #f2c4bf;
+}
+
+
+
 @media (max-width: 760px) {
   .conteneur {
     margin: 1rem;
@@ -376,12 +476,39 @@ td.actions {
     font-size: 1.6rem;
   }
 
-  table {
-    font-size: 0.88rem;
+  .tracker-toolbar {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
 
-  th,
-  td {
-    padding: 10px;
+  .filters-group {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .search-input,
+  .status-filter {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .tracker-toolbar .offers-counter {
+    width: 100%;
+    min-width: 0;
+    justify-content: space-between;
+  }
+
+  .desktop-table {
+    display: none;
+  }
+
+  .mobile-cards {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .table-scroll {
+    overflow: visible;
+    padding-bottom: 0;
   }
 }
