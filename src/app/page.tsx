@@ -239,9 +239,16 @@ export default function Page() {
       </header>
 
       <h2 className="section-title">New application</h2>
-      <div className="form-row">
+      <form
+        className="form-row"
+        onSubmit={(e) => {
+          e.preventDefault();
+          addJob();
+        }}
+      >
         <input
           type="text"
+          aria-label="Company"
           placeholder="Company"
           value={company}
           onChange={(e) => setCompany(e.target.value)}
@@ -249,20 +256,22 @@ export default function Page() {
 
         <input
           type="text"
+          aria-label="Position"
           placeholder="Position"
           value={position}
           onChange={(e) => setPosition(e.target.value)}
         />
 
         <input
-          type="text"
+          type="url"
+          aria-label="Offer URL"
           placeholder="Offer URL"
           value={offerUrl}
           onChange={(e) => setOfferUrl(e.target.value)}
         />
 
-        <button onClick={addJob}>Add application</button>
-      </div>
+        <button type="submit">Add application</button>
+      </form>
 
       <h2 className="section-title applications-title">Applications</h2>
 
@@ -270,6 +279,7 @@ export default function Page() {
         <div className="filters-group">
           <input
             type="text"
+            aria-label="Search applications"
             placeholder="Search company or position..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -277,6 +287,7 @@ export default function Page() {
           />
 
           <select
+            aria-label="Filter applications by status"
             value={statusFilter}
             onChange={(e) =>
               setStatusFilter(e.target.value as JobStatus | "all")
