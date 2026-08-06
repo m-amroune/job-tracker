@@ -239,5 +239,32 @@ test("deletes the application after confirmation", () => {
   );
   expect(deleteJob).toHaveBeenCalledWith("1");
 });
+test("does not delete the application when confirmation is cancelled", () => {
+  const deleteJob = jest.fn();
 
+  jest.spyOn(window, "confirm").mockReturnValue(false);
+
+  render(
+    <table>
+      <tbody>
+        <JobRow
+          job={job}
+          editingId={null}
+          setEditingId={jest.fn()}
+          updateJob={jest.fn()}
+          cycleStatus={jest.fn()}
+          resetStatus={jest.fn()}
+          deleteJob={deleteJob}
+        />
+      </tbody>
+    </table>,
+  );
+
+  fireEvent.click(screen.getByRole("button", { name: "Delete" }));
+
+  expect(window.confirm).toHaveBeenCalledWith(
+    "Delete this application?",
+  );
+  expect(deleteJob).not.toHaveBeenCalled();
+});
 });
