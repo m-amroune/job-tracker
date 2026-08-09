@@ -5,6 +5,7 @@ A responsive job application tracker built with Next.js, React and TypeScript.
 [View live demo](https://m-a-job-tracker.vercel.app/)
 
 ![Job Tracker interface](./public/assets/job_tracker.png)
+
 ---
 
 ## About the Project
@@ -17,17 +18,12 @@ Applications can be added, edited, searched, filtered and sorted. Data is saved 
 
 ## Features
 
-- Add a company, position and offer link
-- Edit existing applications
-- Track applications through four statuses:
-  `todo → applied → interview → rejected`
-- Reset an application status
-- Search by company or position
-- Filter applications by status
-- Sort applications by company, position, status or date
-- Delete an application with confirmation
-- Save data locally after page reload
-- Responsive table on desktop and cards on mobile
+- Add, edit and delete job applications
+- Track application status from `todo` to `rejected`
+- Search, filter and sort applications
+- Save offer links for each application
+- Persist data with `localStorage`
+- Responsive desktop table and mobile cards
 
 ---
 
@@ -36,6 +32,8 @@ Applications can be added, edited, searched, filtered and sorted. Data is saved 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+![Jest](https://img.shields.io/badge/Jest-C21325?style=flat&logo=jest&logoColor=white)
+![Testing Library](https://img.shields.io/badge/Testing%20Library-E33332?style=flat&logo=testinglibrary&logoColor=white)
 ![npm](https://img.shields.io/badge/npm-CB3837?style=flat&logo=npm&logoColor=white)
 
 ---
@@ -47,6 +45,4 @@ git clone https://github.com/m-amroune/job-tracker.git
 cd job-tracker
 npm install
 npm run dev
-```
-
-Open `http://localhost:3000` in your browser.
+Open http://localhost:3000 in your browser.
