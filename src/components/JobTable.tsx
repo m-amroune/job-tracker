@@ -1,6 +1,6 @@
 import JobRow from "./JobRow";
-import { JobApplication } from "@/types/job";
 import JobCard from "./JobCard";
+import { JobApplication } from "@/types/job";
 
 type SortKey = "company" | "position" | "status" | "createdAt";
 
@@ -40,107 +40,110 @@ export default function JobTable({
   deleteJob,
 }: JobTableProps) {
   return (
-  <>
-    <div className="desktop-table">
-      <table>
-        <thead>
-          <tr>
-            <th
-              onClick={() =>
-                setSortConfig({
-                  key: "company",
-                  dir:
-                    sortConfig.key === "company" &&
-                    sortConfig.dir === "asc"
-                      ? "desc"
-                      : "asc",
-                })
-              }
-            >
-              Company
-            </th>
+    <>
+      {/* Desktop layout uses a sortable table */}
+      <div className="desktop-table">
+        <table>
+          <thead>
+            <tr>
+              <th
+                onClick={() =>
+                  setSortConfig({
+                    key: "company",
+                    dir:
+                      sortConfig.key === "company" &&
+                      sortConfig.dir === "asc"
+                        ? "desc"
+                        : "asc",
+                  })
+                }
+              >
+                Company
+              </th>
 
-            <th
-              onClick={() =>
-                setSortConfig({
-                  key: "position",
-                  dir:
-                    sortConfig.key === "position" &&
-                    sortConfig.dir === "asc"
-                      ? "desc"
-                      : "asc",
-                })
-              }
-            >
-              Position
-            </th>
+              <th
+                onClick={() =>
+                  setSortConfig({
+                    key: "position",
+                    dir:
+                      sortConfig.key === "position" &&
+                      sortConfig.dir === "asc"
+                        ? "desc"
+                        : "asc",
+                  })
+                }
+              >
+                Position
+              </th>
 
-            <th
-              onClick={() =>
-                setSortConfig({
-                  key: "status",
-                  dir:
-                    sortConfig.key === "status" &&
-                    sortConfig.dir === "asc"
-                      ? "desc"
-                      : "asc",
-                })
-              }
-            >
-              Status
-            </th>
+              <th
+                onClick={() =>
+                  setSortConfig({
+                    key: "status",
+                    dir:
+                      sortConfig.key === "status" &&
+                      sortConfig.dir === "asc"
+                        ? "desc"
+                        : "asc",
+                  })
+                }
+              >
+                Status
+              </th>
 
-            <th
-              onClick={() =>
-                setSortConfig({
-                  key: "createdAt",
-                  dir:
-                    sortConfig.key === "createdAt" &&
-                    sortConfig.dir === "asc"
-                      ? "desc"
-                      : "asc",
-                })
-              }
-            >
-              Date
-            </th>
+              <th
+                onClick={() =>
+                  setSortConfig({
+                    key: "createdAt",
+                    dir:
+                      sortConfig.key === "createdAt" &&
+                      sortConfig.dir === "asc"
+                        ? "desc"
+                        : "asc",
+                  })
+                }
+              >
+                Date
+              </th>
+
               <th>Follow-up</th>
-            <th>Link</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
+              <th>Link</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {jobs.map((job) => (
-            <JobRow
-              key={job.id}
-              job={job}
-              editingId={editingId}
-              setEditingId={setEditingId}
-              updateJob={updateJob}
-              cycleStatus={cycleStatus}
-              resetStatus={resetStatus}
-              deleteJob={deleteJob}
-            />
-          ))}
-        </tbody>
-      </table>
-    </div>
+          <tbody>
+            {jobs.map((job) => (
+              <JobRow
+                key={job.id}
+                job={job}
+                editingId={editingId}
+                setEditingId={setEditingId}
+                updateJob={updateJob}
+                cycleStatus={cycleStatus}
+                resetStatus={resetStatus}
+                deleteJob={deleteJob}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-    <div className="mobile-cards">
-      {jobs.map((job) => (
-        <JobCard
-          key={job.id}
-          job={job}
-          editingId={editingId}
-          setEditingId={setEditingId}
-          updateJob={updateJob}
-          cycleStatus={cycleStatus}
-          resetStatus={resetStatus}
-          deleteJob={deleteJob}
-        />
-      ))}
-    </div>
-  </>
-);
+      {/* Mobile layout reuses the same jobs and actions as individual cards */}
+      <div className="mobile-cards">
+        {jobs.map((job) => (
+          <JobCard
+            key={job.id}
+            job={job}
+            editingId={editingId}
+            setEditingId={setEditingId}
+            updateJob={updateJob}
+            cycleStatus={cycleStatus}
+            resetStatus={resetStatus}
+            deleteJob={deleteJob}
+          />
+        ))}
+      </div>
+    </>
+  );
 }

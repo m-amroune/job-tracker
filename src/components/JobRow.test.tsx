@@ -268,3 +268,36 @@ test("does not delete the application when confirmation is cancelled", () => {
   expect(deleteJob).not.toHaveBeenCalled();
 });
 });
+
+test("updates the follow-up date", () => {
+  const updateJob = jest.fn();
+
+  render(
+    <table>
+      <tbody>
+        <JobRow
+          job={job}
+          editingId="1"
+          setEditingId={jest.fn()}
+          updateJob={updateJob}
+          cycleStatus={jest.fn()}
+          resetStatus={jest.fn()}
+          deleteJob={jest.fn()}
+        />
+      </tbody>
+    </table>,
+  );
+
+  fireEvent.change(
+    screen.getByLabelText("Follow-up date for Nova Digital"),
+    {
+      target: { value: "2026-08-25" },
+    },
+  );
+
+  expect(updateJob).toHaveBeenCalledWith(
+    "1",
+    "followUpDate",
+    "2026-08-25",
+  );
+});

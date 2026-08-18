@@ -290,6 +290,34 @@ td.date-cell {
   font-size: 0.9rem;
 }
 
+td.date-cell {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+td.follow-up-upcoming,
+.job-card .follow-up-upcoming {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+td.follow-up-today,
+.job-card .follow-up-today {
+  color: #d97706;
+  font-weight: 600;
+}
+
+td.follow-up-overdue,
+.job-card .follow-up-overdue {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.center {
+  text-align: center;
+}
+
 .center {
   text-align: center;
 }

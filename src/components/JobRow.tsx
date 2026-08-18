@@ -1,5 +1,7 @@
 "use client";
+
 import { JobApplication } from "@/types/job";
+import { getFollowUpStatus } from "@/lib/followUp";
 
 interface JobRowProps {
   job: JobApplication;
@@ -24,9 +26,22 @@ export default function JobRow({
   resetStatus,
   deleteJob,
 }: JobRowProps) {
+  // Build today's local date in the same YYYY-MM-DD format as followUpDate.
+  const now = new Date();
+
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+    2,
+    "0",
+  )}-${String(now.getDate()).padStart(2, "0")}`;
+
+  // Determine which visual state should be used for the follow-up date.
+  const followUpStatus = job.followUpDate
+    ? getFollowUpStatus(job.followUpDate, today)
+    : undefined;
+
   return (
     <tr>
-      {/* company field (editable) */}
+      {/* Company field */}
       <td className="center">
         {editingId === job.id ? (
           <input
@@ -39,7 +54,7 @@ export default function JobRow({
         )}
       </td>
 
-      {/* position field (editable) */}
+      {/* Position field */}
       <td className="center">
         {editingId === job.id ? (
           <input
@@ -52,7 +67,7 @@ export default function JobRow({
         )}
       </td>
 
-      {/* status cycle */}
+      {/* Status can be changed directly from the table */}
       <td className="center status-cell">
         <button
           type="button"
@@ -64,27 +79,34 @@ export default function JobRow({
         </button>
       </td>
 
-      {/* created date */}
+      {/* Application creation date */}
       <td className="center date-cell">
         {new Date(job.createdAt).toLocaleDateString()}
       </td>
-      <td className="center date-cell">
-  {editingId === job.id ? (
-    <input
-      type="date"
-      aria-label={`Follow-up date for ${job.company}`}
-      value={job.followUpDate ?? ""}
-      onChange={(e) =>
-        updateJob(job.id, "followUpDate", e.target.value)
-      }
-    />
-  ) : job.followUpDate ? (
-    new Date(`${job.followUpDate}T00:00:00`).toLocaleDateString()
-  ) : (
-    "No date"
-  )}
-</td>
-      {/* offer URL  */}
+
+      {/* Follow-up date and its current state */}
+      <td
+        className={`center date-cell ${
+          followUpStatus ? `follow-up-${followUpStatus}` : ""
+        }`}
+      >
+        {editingId === job.id ? (
+          <input
+            type="date"
+            aria-label={`Follow-up date for ${job.company}`}
+            value={job.followUpDate ?? ""}
+            onChange={(e) =>
+              updateJob(job.id, "followUpDate", e.target.value)
+            }
+          />
+        ) : job.followUpDate ? (
+          new Date(`${job.followUpDate}T00:00:00`).toLocaleDateString()
+        ) : (
+          "No date"
+        )}
+      </td>
+
+      {/* Offer link */}
       <td className="center">
         {editingId === job.id ? (
           <input
@@ -101,7 +123,7 @@ export default function JobRow({
         )}
       </td>
 
-      {/* actions */}
+      {/* Row actions */}
       <td className="center actions">
         <div className="action-wrapper">
           {editingId === job.id ? (

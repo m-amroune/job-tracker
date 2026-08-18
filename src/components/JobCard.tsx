@@ -1,6 +1,7 @@
 "use client";
 
 import { JobApplication } from "@/types/job";
+import { getFollowUpStatus } from "@/lib/followUp";
 
 interface JobCardProps {
   job: JobApplication;
@@ -26,6 +27,19 @@ export default function JobCard({
   deleteJob,
 }: JobCardProps) {
   const isEditing = editingId === job.id;
+
+  // Build today's local date in the same YYYY-MM-DD format as followUpDate.
+  const now = new Date();
+
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+    2,
+    "0",
+  )}-${String(now.getDate()).padStart(2, "0")}`;
+
+  // Determine which visual state should be used for the follow-up date.
+  const followUpStatus = job.followUpDate
+    ? getFollowUpStatus(job.followUpDate, today)
+    : undefined;
 
   return (
     <article className="job-card">
@@ -53,6 +67,7 @@ export default function JobCard({
           )}
         </div>
 
+        {/* Status can be changed directly from the card */}
         <button
           type="button"
           className={`status-badge status-${job.status}`}
@@ -68,26 +83,36 @@ export default function JobCard({
           <span className="job-card-label">Date</span>
           <span>{new Date(job.createdAt).toLocaleDateString()}</span>
         </div>
-        <div>
-  <span className="job-card-label">Follow-up</span>
 
-  {editingId === job.id ? (
-    <input
-      type="date"
-      aria-label={`Follow-up date for ${job.company}`}
-      value={job.followUpDate ?? ""}
-      onChange={(e) =>
-        updateJob(job.id, "followUpDate", e.target.value)
-      }
-    />
-  ) : (
-    <span>
-      {job.followUpDate
-        ? new Date(`${job.followUpDate}T00:00:00`).toLocaleDateString()
-        : "No date"}
-    </span>
-  )}
-</div>
+        {/* Follow-up date and its current state */}
+        <div>
+          <span className="job-card-label">Follow-up</span>
+
+          {isEditing ? (
+            <input
+              type="date"
+              aria-label={`Follow-up date for ${job.company}`}
+              value={job.followUpDate ?? ""}
+              onChange={(e) =>
+                updateJob(job.id, "followUpDate", e.target.value)
+              }
+            />
+          ) : (
+            <span
+              className={
+                followUpStatus ? `follow-up-${followUpStatus}` : undefined
+              }
+            >
+              {job.followUpDate
+                ? new Date(
+                    `${job.followUpDate}T00:00:00`,
+                  ).toLocaleDateString()
+                : "No date"}
+            </span>
+          )}
+        </div>
+
+        {/* Offer link */}
         <div>
           <span className="job-card-label">Offer</span>
 
@@ -107,6 +132,7 @@ export default function JobCard({
         </div>
       </div>
 
+      {/* Card actions */}
       <div className="job-card-actions">
         {isEditing ? (
           <button

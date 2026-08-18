@@ -5,7 +5,7 @@ import { loadJobs, saveJobs } from "@/lib/storage";
 import { JobApplication, JobStatus } from "@/types/job";
 import JobTable from "@/components/JobTable";
 
-// Ordered list of job statuses (business workflow)
+// Defines the order used when cycling through application statuses.
 const STATUS_ORDER: readonly JobStatus[] = [
   "todo",
   "applied",
@@ -13,36 +13,33 @@ const STATUS_ORDER: readonly JobStatus[] = [
   "rejected",
 ];
 
-// Move to the next status (rejected is terminal)
+// Returns the next status in the workflow. Rejected is the final state.
 function getNextStatus(current: JobStatus): JobStatus {
   const index = STATUS_ORDER.indexOf(current);
 
   if (index === STATUS_ORDER.length - 1) {
-    return current; // stay on rejected
+    return current;
   }
 
   return STATUS_ORDER[index + 1];
 }
 
 export default function Page() {
-  // Stored job applications (hydrated from localStorage)
+  // Main application state, hydrated from localStorage on first render.
   const [jobs, setJobs] = useState<JobApplication[]>([]);
 
-  // Controlled inputs for creation form
+  // Controlled inputs for the creation form.
   const [company, setCompany] = useState("");
   const [position, setPosition] = useState("");
-
   const [offerUrl, setOfferUrl] = useState("");
-
   const [followUpDate, setFollowUpDate] = useState("");
 
-  // Id of the row currently being edited (null = no edit mode)
+  // Tracks which application is currently in edit mode.
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  // allowed keys for sorting
   type SortKey = "company" | "position" | "status" | "createdAt";
 
-  // sort settings for table columns
+  // Current column and direction used to sort the applications.
   const [sortConfig, setSortConfig] = useState<{
     key: SortKey;
     dir: "asc" | "desc";
@@ -51,17 +48,14 @@ export default function Page() {
     dir: "desc",
   });
 
-  // search query for filtering jobs
   const [search, setSearch] = useState("");
-
-  // filter by status
   const [statusFilter, setStatusFilter] = useState<JobStatus | "all">("all");
 
-  // Load jobs on first render
+  // Load stored applications once when the page is mounted.
   useEffect(() => {
     const raw = loadJobs();
 
-    // // If storage is empty, initialize with demo jobs
+    // Seed demo applications when localStorage does not contain any jobs.
     if (!Array.isArray(raw) || raw.length === 0) {
       const DEFAULT_JOBS: JobApplication[] = [
         {
@@ -92,9 +86,8 @@ export default function Page() {
       return;
     }
 
-    // Normalize loaded items so status is typed as JobStatus
+    // Normalize stored data before using it as JobApplication objects.
     const normalized: JobApplication[] = raw.map((item) => {
-      // treat item as a generic record and validate each field
       const rec = item as Record<string, unknown>;
 
       const id =
@@ -105,7 +98,7 @@ export default function Page() {
       const company = typeof rec.company === "string" ? rec.company : "";
       const position = typeof rec.position === "string" ? rec.position : "";
 
-      // ensure status is one of the allowed JobStatus values
+      // Keep only known status values and fall back to "todo" if invalid.
       const statusCandidate = typeof rec.status === "string" ? rec.status : "";
       const status: JobStatus = STATUS_ORDER.includes(
         statusCandidate as JobStatus,
@@ -121,6 +114,7 @@ export default function Page() {
       const offerUrl =
         typeof rec.offerUrl === "string" ? rec.offerUrl : undefined;
 
+      // Optional fields stay compatible with older localStorage data.
       const followUpDate =
         typeof rec.followUpDate === "string" ? rec.followUpDate : undefined;
 
@@ -141,7 +135,7 @@ export default function Page() {
     setJobs(normalized);
   }, []);
 
-  // Create a new job entry from form inputs and persist
+  // Create a new application and persist the updated list.
   function addJob() {
     if (!company.trim() || !position.trim()) return;
 
@@ -166,7 +160,7 @@ export default function Page() {
     setFollowUpDate("");
   }
 
-  // Move job to next status in workflow and persist
+  // Move an application to the next status and persist the change.
   function cycleStatus(id: string) {
     const updatedJobs = jobs.map((job) =>
       job.id === id
@@ -178,7 +172,7 @@ export default function Page() {
     saveJobs(updatedJobs);
   }
 
-  // Reset job status back to "todo"
+  // Reset an application status back to "todo".
   function resetStatus(id: string) {
     const updatedJobs = jobs.map((job) =>
       job.id === id ? ({ ...job, status: "todo" } as JobApplication) : job,
@@ -188,7 +182,7 @@ export default function Page() {
     saveJobs(updatedJobs);
   }
 
-  // Remove job from list and persist
+  // Remove an application and persist the updated list.
   function deleteJob(id: string) {
     const updatedJobs = jobs.filter((job) => job.id !== id);
 
@@ -196,7 +190,7 @@ export default function Page() {
     saveJobs(updatedJobs);
   }
 
-  // Update a single field while editing a row
+  // Update one editable field without replacing the whole application.
   function updateJob(
     id: string,
     field: "company" | "position" | "offerUrl" | "followUpDate",
@@ -210,8 +204,7 @@ export default function Page() {
     saveJobs(updatedJobs);
   }
 
-  // filter by search (company + position) and status
-
+  // Apply the text search and status filter together.
   const filteredJobs = jobs.filter((job) => {
     const q = search.toLowerCase();
 
@@ -225,7 +218,7 @@ export default function Page() {
     return matchesSearch && matchesStatus;
   });
 
-  // sort jobs by selected column
+  // Sort a copy of the filtered list without mutating the original state.
   const sortedJobs = [...filteredJobs].sort((a, b) => {
     const key = sortConfig.key;
     const dir = sortConfig.dir === "asc" ? 1 : -1;
@@ -236,7 +229,6 @@ export default function Page() {
       return (da - db) * dir;
     }
 
-    // string comparison for company, position, status
     return a[key].localeCompare(b[key]) * dir;
   });
 
@@ -247,6 +239,7 @@ export default function Page() {
       </header>
 
       <h2 className="section-title">New application</h2>
+
       <form
         className="form-row"
         onSubmit={(e) => {
