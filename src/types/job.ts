@@ -9,4 +9,5 @@ export interface JobApplication {
   createdAt: string;
   offerUrl?: string;
   url?: string;
+  followUpDate?: string;
 }

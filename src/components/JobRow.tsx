@@ -7,7 +7,7 @@ interface JobRowProps {
   setEditingId: (id: string | null) => void;
   updateJob: (
     id: string,
-    field: "company" | "position" | "offerUrl",
+    field: "company" | "position" | "offerUrl" | "followUpDate",
     value: string,
   ) => void;
   cycleStatus: (id: string) => void;
@@ -68,12 +68,27 @@ export default function JobRow({
       <td className="center date-cell">
         {new Date(job.createdAt).toLocaleDateString()}
       </td>
-
+      <td className="center date-cell">
+  {editingId === job.id ? (
+    <input
+      type="date"
+      aria-label={`Follow-up date for ${job.company}`}
+      value={job.followUpDate ?? ""}
+      onChange={(e) =>
+        updateJob(job.id, "followUpDate", e.target.value)
+      }
+    />
+  ) : job.followUpDate ? (
+    new Date(`${job.followUpDate}T00:00:00`).toLocaleDateString()
+  ) : (
+    "No date"
+  )}
+</td>
       {/* offer URL  */}
       <td className="center">
         {editingId === job.id ? (
           <input
-          aria-label={`Offer URL for ${job.company}`}
+            aria-label={`Offer URL for ${job.company}`}
             value={job.offerUrl ?? ""}
             onChange={(e) => updateJob(job.id, "offerUrl", e.target.value)}
           />

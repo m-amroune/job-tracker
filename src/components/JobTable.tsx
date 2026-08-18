@@ -19,7 +19,7 @@ interface JobTableProps {
 
   updateJob: (
     id: string,
-    field: "company" | "position" | "offerUrl",
+    field: "company" | "position" | "offerUrl" | "followUpDate",
     value: string,
   ) => void;
 
@@ -104,7 +104,7 @@ export default function JobTable({
             >
               Date
             </th>
-
+              <th>Follow-up</th>
             <th>Link</th>
             <th>Actions</th>
           </tr>

@@ -47,6 +47,53 @@ describe("Home page", () => {
   expect(positionInput).toHaveValue("");
   expect(offerUrlInput).toHaveValue("");
 });
+
+test("saves the follow-up date when adding an application", async () => {
+  render(<Home />);
+
+  await screen.findAllByText("Nova Digital");
+
+  fireEvent.change(
+    screen.getByRole("textbox", {
+      name: "Company",
+    }),
+    {
+      target: { value: "Acme Studio" },
+    },
+  );
+
+  fireEvent.change(
+    screen.getByRole("textbox", {
+      name: "Position",
+    }),
+    {
+      target: { value: "React Developer" },
+    },
+  );
+
+  fireEvent.change(
+    screen.getByLabelText("Follow-up date"),
+    {
+      target: { value: "2026-08-25" },
+    },
+  );
+
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Add application",
+    }),
+  );
+
+  const savedJobs = JSON.parse(localStorage.getItem("jobs") ?? "[]");
+
+  const savedJob = savedJobs.find(
+    (job: { company: string }) => job.company === "Acme Studio",
+  );
+
+  expect(savedJob.followUpDate).toBe("2026-08-25");
+});
+
+
 test("filters applications with the search field", async () => {
   render(<Home />);
 

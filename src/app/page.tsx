@@ -34,6 +34,8 @@ export default function Page() {
 
   const [offerUrl, setOfferUrl] = useState("");
 
+  const [followUpDate, setFollowUpDate] = useState("");
+
   // Id of the row currently being edited (null = no edit mode)
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -119,6 +121,9 @@ export default function Page() {
       const offerUrl =
         typeof rec.offerUrl === "string" ? rec.offerUrl : undefined;
 
+      const followUpDate =
+        typeof rec.followUpDate === "string" ? rec.followUpDate : undefined;
+
       const notes = typeof rec.notes === "string" ? rec.notes : undefined;
 
       return {
@@ -129,6 +134,7 @@ export default function Page() {
         createdAt,
         offerUrl,
         notes,
+        followUpDate,
       } as JobApplication;
     });
 
@@ -144,6 +150,7 @@ export default function Page() {
       company: company.trim(),
       position: position.trim(),
       offerUrl: offerUrl.trim() || undefined,
+      followUpDate: followUpDate || undefined,
       status: "todo",
       createdAt: new Date().toISOString(),
     };
@@ -156,6 +163,7 @@ export default function Page() {
     setCompany("");
     setPosition("");
     setOfferUrl("");
+    setFollowUpDate("");
   }
 
   // Move job to next status in workflow and persist
@@ -191,7 +199,7 @@ export default function Page() {
   // Update a single field while editing a row
   function updateJob(
     id: string,
-    field: "company" | "position" | "offerUrl",
+    field: "company" | "position" | "offerUrl" | "followUpDate",
     value: string,
   ) {
     const updatedJobs = jobs.map((job) =>
@@ -268,6 +276,13 @@ export default function Page() {
           placeholder="Offer URL"
           value={offerUrl}
           onChange={(e) => setOfferUrl(e.target.value)}
+        />
+
+        <input
+          type="date"
+          aria-label="Follow-up date"
+          value={followUpDate}
+          onChange={(e) => setFollowUpDate(e.target.value)}
         />
 
         <button type="submit">Add application</button>
