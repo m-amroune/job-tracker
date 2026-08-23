@@ -33,6 +33,7 @@ export default function Page() {
   const [position, setPosition] = useState("");
   const [offerUrl, setOfferUrl] = useState("");
   const [followUpDate, setFollowUpDate] = useState("");
+  const [notes, setNotes] = useState("");
 
   // Tracks which application is currently in edit mode.
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -145,6 +146,7 @@ export default function Page() {
       position: position.trim(),
       offerUrl: offerUrl.trim() || undefined,
       followUpDate: followUpDate || undefined,
+      notes: notes.trim() || undefined,
       status: "todo",
       createdAt: new Date().toISOString(),
     };
@@ -158,6 +160,7 @@ export default function Page() {
     setPosition("");
     setOfferUrl("");
     setFollowUpDate("");
+    setNotes("");
   }
 
   // Move an application to the next status and persist the change.
@@ -193,7 +196,7 @@ export default function Page() {
   // Update one editable field without replacing the whole application.
   function updateJob(
     id: string,
-    field: "company" | "position" | "offerUrl" | "followUpDate",
+    field: "company" | "position" | "offerUrl" | "followUpDate" | "notes",
     value: string,
   ) {
     const updatedJobs = jobs.map((job) =>
@@ -276,6 +279,13 @@ export default function Page() {
           aria-label="Follow-up date"
           value={followUpDate}
           onChange={(e) => setFollowUpDate(e.target.value)}
+        />
+
+        <textarea
+          aria-label="Notes"
+          placeholder="Notes"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
         />
 
         <button type="submit">Add application</button>

@@ -19,7 +19,7 @@ interface JobTableProps {
 
   updateJob: (
     id: string,
-    field: "company" | "position" | "offerUrl" | "followUpDate",
+    field: "company" | "position" | "offerUrl" | "followUpDate" | "notes",
     value: string,
   ) => void;
 
@@ -51,8 +51,7 @@ export default function JobTable({
                   setSortConfig({
                     key: "company",
                     dir:
-                      sortConfig.key === "company" &&
-                      sortConfig.dir === "asc"
+                      sortConfig.key === "company" && sortConfig.dir === "asc"
                         ? "desc"
                         : "asc",
                   })
@@ -66,8 +65,7 @@ export default function JobTable({
                   setSortConfig({
                     key: "position",
                     dir:
-                      sortConfig.key === "position" &&
-                      sortConfig.dir === "asc"
+                      sortConfig.key === "position" && sortConfig.dir === "asc"
                         ? "desc"
                         : "asc",
                   })
@@ -81,8 +79,7 @@ export default function JobTable({
                   setSortConfig({
                     key: "status",
                     dir:
-                      sortConfig.key === "status" &&
-                      sortConfig.dir === "asc"
+                      sortConfig.key === "status" && sortConfig.dir === "asc"
                         ? "desc"
                         : "asc",
                   })
@@ -96,8 +93,7 @@ export default function JobTable({
                   setSortConfig({
                     key: "createdAt",
                     dir:
-                      sortConfig.key === "createdAt" &&
-                      sortConfig.dir === "asc"
+                      sortConfig.key === "createdAt" && sortConfig.dir === "asc"
                         ? "desc"
                         : "asc",
                   })
@@ -107,6 +103,7 @@ export default function JobTable({
               </th>
 
               <th>Follow-up</th>
+              <th>Notes</th>
               <th>Link</th>
               <th>Actions</th>
             </tr>

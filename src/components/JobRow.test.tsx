@@ -301,3 +301,33 @@ test("updates the follow-up date", () => {
     "2026-08-25",
   );
 });
+
+test("updates the notes field", () => {
+  const updateJob = jest.fn();
+
+  render(
+    <table>
+      <tbody>
+        <JobRow
+          job={job}
+          editingId="1"
+          setEditingId={jest.fn()}
+          updateJob={updateJob}
+          cycleStatus={jest.fn()}
+          resetStatus={jest.fn()}
+          deleteJob={jest.fn()}
+        />
+      </tbody>
+    </table>,
+  );
+
+  fireEvent.change(screen.getByLabelText("Notes for Nova Digital"), {
+    target: { value: "Interview scheduled for Friday" },
+  });
+
+  expect(updateJob).toHaveBeenCalledWith(
+    "1",
+    "notes",
+    "Interview scheduled for Friday",
+  );
+});

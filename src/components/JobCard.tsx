@@ -9,7 +9,7 @@ interface JobCardProps {
   setEditingId: (id: string | null) => void;
   updateJob: (
     id: string,
-    field: "company" | "position" | "offerUrl" | "followUpDate",
+    field: "company" | "position" | "offerUrl" | "followUpDate" | "notes",
     value: string,
   ) => void;
   cycleStatus: (id: string) => void;
@@ -111,6 +111,21 @@ export default function JobCard({
             </span>
           )}
         </div>
+
+        {/* Application notes */}
+<div>
+  <span className="job-card-label">Notes</span>
+
+  {isEditing ? (
+    <textarea
+      aria-label={`Notes for ${job.company}`}
+      value={job.notes ?? ""}
+      onChange={(e) => updateJob(job.id, "notes", e.target.value)}
+    />
+  ) : (
+    <span>{job.notes || "No notes"}</span>
+  )}
+</div>
 
         {/* Offer link */}
         <div>

@@ -93,6 +93,38 @@ test("saves the follow-up date when adding an application", async () => {
   expect(savedJob.followUpDate).toBe("2026-08-25");
 });
 
+test("saves notes when adding an application", async () => {
+  render(<Home />);
+
+  await screen.findAllByText("Nova Digital");
+
+  fireEvent.change(screen.getByLabelText("Company"), {
+    target: { value: "Acme Studio" },
+  });
+
+  fireEvent.change(screen.getByLabelText("Position"), {
+    target: { value: "React Developer" },
+  });
+
+  fireEvent.change(screen.getByLabelText("Notes"), {
+    target: { value: "Contacted recruiter on LinkedIn" },
+  });
+
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Add application",
+    }),
+  );
+
+  const savedJobs = JSON.parse(localStorage.getItem("jobs") ?? "[]");
+
+  const savedJob = savedJobs.find(
+    (job: { company: string }) => job.company === "Acme Studio",
+  );
+
+  expect(savedJob.notes).toBe("Contacted recruiter on LinkedIn");
+});
+
 
 test("filters applications with the search field", async () => {
   render(<Home />);
