@@ -1,4 +1,4 @@
-// types/job.ts
+
 
 export type JobStatus = "todo" | "applied" | "interview" | "rejected";
 
@@ -14,4 +14,5 @@ export interface JobApplication {
   offerUrl?: string;
   url?: string;
   followUpDate?: string;
+  notes?: string;
 }
