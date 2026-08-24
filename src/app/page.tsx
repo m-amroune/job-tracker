@@ -39,21 +39,6 @@ export default function Page() {
   // Tracks which application is currently in edit mode.
   const [editingId, setEditingId] = useState<string | null>(null);
 
- type SortKey =
-  | "company"
-  | "position"
-  | "status"
-  | "createdAt"
-  | "followUpDate";
-
-  // Current column and direction used to sort the applications.
-  const [sortConfig, setSortConfig] = useState<{
-    key: SortKey;
-    dir: "asc" | "desc";
-  }>({
-    key: "createdAt",
-    dir: "desc",
-  });
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<JobStatus | "all">("all");
@@ -247,28 +232,7 @@ const filteredJobs = jobs.filter((job) => {
   return matchesSearch && matchesStatus && matchesFollowUp;
 });
 
-  // Sort a copy of the filtered list without mutating the original state.
- const sortedJobs = [...filteredJobs].sort((a, b) => {
-  const key = sortConfig.key;
-  const dir = sortConfig.dir === "asc" ? 1 : -1;
-
-  if (key === "createdAt") {
-    const da = new Date(a.createdAt).getTime();
-    const db = new Date(b.createdAt).getTime();
-    return (da - db) * dir;
-  }
-
-  if (key === "followUpDate") {
-    if (!a.followUpDate && !b.followUpDate) return 0;
-    if (!a.followUpDate) return 1;
-    if (!b.followUpDate) return -1;
-
-    return a.followUpDate.localeCompare(b.followUpDate) * dir;
-  }
-
-  return a[key].localeCompare(b[key]) * dir;
-});
-
+ 
   return (
     <main className="conteneur">
       <header className="page-header">
@@ -381,7 +345,7 @@ const filteredJobs = jobs.filter((job) => {
         </div>
       </section>
 
-      {sortedJobs.length === 0 ? (
+     {filteredJobs.length === 0 ? (
         <div className="empty-state">
           {jobs.length === 0 ? (
             <>
@@ -400,9 +364,7 @@ const filteredJobs = jobs.filter((job) => {
       ) : (
         <div className="table-scroll">
           <JobTable
-            jobs={sortedJobs}
-            sortConfig={sortConfig}
-            setSortConfig={setSortConfig}
+            jobs={filteredJobs}
             editingId={editingId}
             setEditingId={setEditingId}
             updateJob={updateJob}

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import JobTable from "./JobTable";
 import type { JobApplication } from "@/types/job";
 
@@ -10,6 +10,7 @@ const jobs: JobApplication[] = [
     status: "todo",
     createdAt: "2026-02-03",
     offerUrl: "https://example.com/job-1",
+    followUpDate: "2026-03-10",
   },
   {
     id: "2",
@@ -18,6 +19,7 @@ const jobs: JobApplication[] = [
     status: "applied",
     createdAt: "2026-02-06",
     offerUrl: "https://example.com/job-2",
+    followUpDate: "2026-02-20",
   },
 ];
 
@@ -26,8 +28,6 @@ describe("JobTable", () => {
     render(
       <JobTable
         jobs={jobs}
-        sortConfig={{ key: "createdAt", dir: "desc" }}
-        setSortConfig={jest.fn()}
         editingId={null}
         setEditingId={jest.fn()}
         updateJob={jest.fn()}
@@ -40,58 +40,62 @@ describe("JobTable", () => {
     expect(screen.getAllByText("Nova Digital")).toHaveLength(2);
     expect(screen.getAllByText("Tech Agency")).toHaveLength(2);
   });
-  test("requests ascending sorting when a column header is clicked", () => {
-  const setSortConfig = jest.fn();
 
-  render(
-    <JobTable
-      jobs={jobs}
-      sortConfig={{ key: "createdAt", dir: "desc" }}
-      setSortConfig={setSortConfig}
-      editingId={null}
-      setEditingId={jest.fn()}
-      updateJob={jest.fn()}
-      cycleStatus={jest.fn()}
-      resetStatus={jest.fn()}
-      deleteJob={jest.fn()}
-    />,
-  );
+  test("sorts applications when a column header is clicked", () => {
+    render(
+      <JobTable
+        jobs={jobs}
+        editingId={null}
+        setEditingId={jest.fn()}
+        updateJob={jest.fn()}
+        cycleStatus={jest.fn()}
+        resetStatus={jest.fn()}
+        deleteJob={jest.fn()}
+      />,
+    );
 
-  fireEvent.click(
-    screen.getByRole("columnheader", { name: "Company" }),
-  );
+    fireEvent.click(
+      screen.getByRole("columnheader", {
+        name: "Company",
+      }),
+    );
 
-  expect(setSortConfig).toHaveBeenCalledWith({
-    key: "company",
-    dir: "asc",
+    fireEvent.click(
+      screen.getByRole("columnheader", {
+        name: "Company",
+      }),
+    );
+
+    const table = screen.getByRole("table");
+    const rows = within(table).getAllByRole("row");
+
+    expect(within(rows[1]).getByText("Tech Agency")).toBeInTheDocument();
+    expect(within(rows[2]).getByText("Nova Digital")).toBeInTheDocument();
   });
-});
-test("sorts by follow-up date when clicking the Follow-up header", () => {
-  const setSortConfig = jest.fn();
 
-  render(
-    <JobTable
-      jobs={jobs}
-      sortConfig={{ key: "createdAt", dir: "desc" }}
-      setSortConfig={setSortConfig}
-      editingId={null}
-      setEditingId={jest.fn()}
-      updateJob={jest.fn()}
-      cycleStatus={jest.fn()}
-      resetStatus={jest.fn()}
-      deleteJob={jest.fn()}
-    />,
-  );
+  test("sorts applications by follow-up date", () => {
+    render(
+      <JobTable
+        jobs={jobs}
+        editingId={null}
+        setEditingId={jest.fn()}
+        updateJob={jest.fn()}
+        cycleStatus={jest.fn()}
+        resetStatus={jest.fn()}
+        deleteJob={jest.fn()}
+      />,
+    );
 
-  fireEvent.click(
-  screen.getByRole("columnheader", {
-    name: "Follow-up",
-  }),
-);
+    fireEvent.click(
+      screen.getByRole("columnheader", {
+        name: "Follow-up",
+      }),
+    );
 
-  expect(setSortConfig).toHaveBeenCalledWith({
-    key: "followUpDate",
-    dir: "asc",
+    const table = screen.getByRole("table");
+    const rows = within(table).getAllByRole("row");
+
+    expect(within(rows[1]).getByText("Tech Agency")).toBeInTheDocument();
+    expect(within(rows[2]).getByText("Nova Digital")).toBeInTheDocument();
   });
-});
 });
