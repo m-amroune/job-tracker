@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { loadJobs, saveJobs } from "@/lib/storage";
+import { getFollowUpStatus } from "@/lib/followUp";
 import { JobApplication, JobStatus } from "@/types/job";
 import JobTable from "@/components/JobTable";
 
@@ -38,7 +39,12 @@ export default function Page() {
   // Tracks which application is currently in edit mode.
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  type SortKey = "company" | "position" | "status" | "createdAt";
+ type SortKey =
+  | "company"
+  | "position"
+  | "status"
+  | "createdAt"
+  | "followUpDate";
 
   // Current column and direction used to sort the applications.
   const [sortConfig, setSortConfig] = useState<{
@@ -51,6 +57,9 @@ export default function Page() {
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<JobStatus | "all">("all");
+  const [followUpFilter, setFollowUpFilter] = useState<
+  "all" | "upcoming" | "today" | "overdue" | "no-date"
+>("all");
 
   // Load stored applications once when the page is mounted.
   useEffect(() => {
@@ -206,34 +215,59 @@ export default function Page() {
     setJobs(updatedJobs);
     saveJobs(updatedJobs);
   }
+// Build today's local date to compare follow-up dates.
+const now = new Date();
 
-  // Apply the text search and status filter together.
-  const filteredJobs = jobs.filter((job) => {
-    const q = search.toLowerCase();
+const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+  2,
+  "0",
+)}-${String(now.getDate()).padStart(2, "0")}`;
 
-    const matchesSearch =
-      job.company.toLowerCase().includes(q) ||
-      job.position.toLowerCase().includes(q);
+// Apply search, status and follow-up filters together.
+const filteredJobs = jobs.filter((job) => {
+  const q = search.toLowerCase();
 
-    const matchesStatus =
-      statusFilter === "all" ? true : job.status === statusFilter;
+  const matchesSearch =
+    job.company.toLowerCase().includes(q) ||
+    job.position.toLowerCase().includes(q);
 
-    return matchesSearch && matchesStatus;
-  });
+  const matchesStatus =
+    statusFilter === "all" ? true : job.status === statusFilter;
+
+  let matchesFollowUp = true;
+
+  if (followUpFilter === "no-date") {
+    matchesFollowUp = !job.followUpDate;
+  } else if (followUpFilter !== "all") {
+    matchesFollowUp =
+      !!job.followUpDate &&
+      getFollowUpStatus(job.followUpDate, today) === followUpFilter;
+  }
+
+  return matchesSearch && matchesStatus && matchesFollowUp;
+});
 
   // Sort a copy of the filtered list without mutating the original state.
-  const sortedJobs = [...filteredJobs].sort((a, b) => {
-    const key = sortConfig.key;
-    const dir = sortConfig.dir === "asc" ? 1 : -1;
+ const sortedJobs = [...filteredJobs].sort((a, b) => {
+  const key = sortConfig.key;
+  const dir = sortConfig.dir === "asc" ? 1 : -1;
 
-    if (key === "createdAt") {
-      const da = new Date(a.createdAt).getTime();
-      const db = new Date(b.createdAt).getTime();
-      return (da - db) * dir;
-    }
+  if (key === "createdAt") {
+    const da = new Date(a.createdAt).getTime();
+    const db = new Date(b.createdAt).getTime();
+    return (da - db) * dir;
+  }
 
-    return a[key].localeCompare(b[key]) * dir;
-  });
+  if (key === "followUpDate") {
+    if (!a.followUpDate && !b.followUpDate) return 0;
+    if (!a.followUpDate) return 1;
+    if (!b.followUpDate) return -1;
+
+    return a.followUpDate.localeCompare(b.followUpDate) * dir;
+  }
+
+  return a[key].localeCompare(b[key]) * dir;
+});
 
   return (
     <main className="conteneur">
@@ -318,6 +352,27 @@ export default function Page() {
             <option value="interview">Interview</option>
             <option value="rejected">Rejected</option>
           </select>
+          <select
+  aria-label="Filter applications by follow-up"
+  value={followUpFilter}
+  onChange={(e) =>
+    setFollowUpFilter(
+      e.target.value as
+        | "all"
+        | "upcoming"
+        | "today"
+        | "overdue"
+        | "no-date",
+    )
+  }
+  className="status-filter"
+>
+  <option value="all">All follow-ups</option>
+  <option value="upcoming">Upcoming</option>
+  <option value="today">Today</option>
+  <option value="overdue">Overdue</option>
+  <option value="no-date">No date</option>
+</select>
         </div>
 
         <div className="offers-counter">

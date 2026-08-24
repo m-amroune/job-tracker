@@ -2,7 +2,12 @@ import JobRow from "./JobRow";
 import JobCard from "./JobCard";
 import { JobApplication } from "@/types/job";
 
-type SortKey = "company" | "position" | "status" | "createdAt";
+type SortKey =
+  | "company"
+  | "position"
+  | "status"
+  | "createdAt"
+  | "followUpDate";
 
 interface JobTableProps {
   jobs: JobApplication[];
@@ -102,7 +107,20 @@ export default function JobTable({
                 Date
               </th>
 
-              <th>Follow-up</th>
+              <th
+  onClick={() =>
+    setSortConfig({
+      key: "followUpDate",
+      dir:
+        sortConfig.key === "followUpDate" &&
+        sortConfig.dir === "asc"
+          ? "desc"
+          : "asc",
+    })
+  }
+>
+  Follow-up
+</th>
               <th>Notes</th>
               <th>Link</th>
               <th>Actions</th>

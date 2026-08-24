@@ -162,4 +162,40 @@ test("filters applications by status", async () => {
   expect(screen.queryByText("Nova Digital")).not.toBeInTheDocument();
   expect(screen.queryByText("Tech agency")).not.toBeInTheDocument();
 });
+
+test("filters applications by follow-up status", async () => {
+  render(<Home />);
+
+  await screen.findAllByText("Nova Digital");
+
+  fireEvent.change(screen.getByLabelText("Company"), {
+    target: { value: "Acme Studio" },
+  });
+
+  fireEvent.change(screen.getByLabelText("Position"), {
+    target: { value: "React Developer" },
+  });
+
+  fireEvent.change(screen.getByLabelText("Follow-up date"), {
+    target: { value: "2099-01-01" },
+  });
+
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Add application",
+    }),
+  );
+
+  expect(screen.getAllByText("Acme Studio").length).toBeGreaterThan(0);
+
+  fireEvent.change(
+    screen.getByLabelText("Filter applications by follow-up"),
+    {
+      target: { value: "no-date" },
+    },
+  );
+
+  expect(screen.queryByText("Acme Studio")).not.toBeInTheDocument();
 });
+});
+
