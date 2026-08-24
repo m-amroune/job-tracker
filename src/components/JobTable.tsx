@@ -1,23 +1,56 @@
 import JobRow from "./JobRow";
 import JobCard from "./JobCard";
 import { JobApplication } from "@/types/job";
+import {
+  createSortedRowModel,
+  rowSortingFeature,
+  tableFeatures,
+  useTable,
+} from "@tanstack/react-table";
 
-type SortKey =
-  | "company"
-  | "position"
-  | "status"
-  | "createdAt"
-  | "followUpDate";
+import type { ColumnDef } from "@tanstack/react-table";
+
+
+  const features = tableFeatures({
+  rowSortingFeature,
+  sortedRowModel: createSortedRowModel(),
+});
+
+const columns: Array<ColumnDef<typeof features, JobApplication>> = [
+  {
+    accessorKey: "company",
+    header: "Company",
+  },
+  {
+    accessorKey: "position",
+    header: "Position",
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Date",
+  },
+  {
+    accessorKey: "followUpDate",
+    header: "Follow-up",
+  },
+  {
+    accessorKey: "notes",
+    header: "Notes",
+  },
+  {
+    accessorKey: "offerUrl",
+    header: "Link",
+  },
+];
 
 interface JobTableProps {
   jobs: JobApplication[];
 
-  sortConfig: {
-    key: SortKey;
-    dir: "asc" | "desc";
-  };
 
-  setSortConfig: (config: { key: SortKey; dir: "asc" | "desc" }) => void;
 
   editingId: string | null;
   setEditingId: (id: string | null) => void;
@@ -35,8 +68,6 @@ interface JobTableProps {
 
 export default function JobTable({
   jobs,
-  sortConfig,
-  setSortConfig,
   editingId,
   setEditingId,
   updateJob,
@@ -44,103 +75,49 @@ export default function JobTable({
   resetStatus,
   deleteJob,
 }: JobTableProps) {
+  const table = useTable({
+  features,
+  columns,
+  data: jobs,
+});
   return (
     <>
       {/* Desktop layout uses a sortable table */}
       <div className="desktop-table">
         <table>
-          <thead>
-            <tr>
-              <th
-                onClick={() =>
-                  setSortConfig({
-                    key: "company",
-                    dir:
-                      sortConfig.key === "company" && sortConfig.dir === "asc"
-                        ? "desc"
-                        : "asc",
-                  })
-                }
-              >
-                Company
-              </th>
+  <thead>
+  {table.getHeaderGroups().map((headerGroup) => (
+    <tr key={headerGroup.id}>
+      {headerGroup.headers.map((header) => (
+        <th
+          key={header.id}
+          onClick={header.column.getToggleSortingHandler()}
+        >
+          {header.isPlaceholder ? null : (
+            <table.FlexRender header={header} />
+          )}
+        </th>
+      ))}
 
-              <th
-                onClick={() =>
-                  setSortConfig({
-                    key: "position",
-                    dir:
-                      sortConfig.key === "position" && sortConfig.dir === "asc"
-                        ? "desc"
-                        : "asc",
-                  })
-                }
-              >
-                Position
-              </th>
-
-              <th
-                onClick={() =>
-                  setSortConfig({
-                    key: "status",
-                    dir:
-                      sortConfig.key === "status" && sortConfig.dir === "asc"
-                        ? "desc"
-                        : "asc",
-                  })
-                }
-              >
-                Status
-              </th>
-
-              <th
-                onClick={() =>
-                  setSortConfig({
-                    key: "createdAt",
-                    dir:
-                      sortConfig.key === "createdAt" && sortConfig.dir === "asc"
-                        ? "desc"
-                        : "asc",
-                  })
-                }
-              >
-                Date
-              </th>
-
-              <th
-  onClick={() =>
-    setSortConfig({
-      key: "followUpDate",
-      dir:
-        sortConfig.key === "followUpDate" &&
-        sortConfig.dir === "asc"
-          ? "desc"
-          : "asc",
-    })
-  }
->
-  Follow-up
-</th>
-              <th>Notes</th>
-              <th>Link</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+      <th>Actions</th>
+    </tr>
+  ))}
+</thead>
 
           <tbody>
-            {jobs.map((job) => (
-              <JobRow
-                key={job.id}
-                job={job}
-                editingId={editingId}
-                setEditingId={setEditingId}
-                updateJob={updateJob}
-                cycleStatus={cycleStatus}
-                resetStatus={resetStatus}
-                deleteJob={deleteJob}
-              />
-            ))}
-          </tbody>
+  {table.getRowModel().rows.map((row) => (
+    <JobRow
+      key={row.original.id}
+      job={row.original}
+      editingId={editingId}
+      setEditingId={setEditingId}
+      updateJob={updateJob}
+      cycleStatus={cycleStatus}
+      resetStatus={resetStatus}
+      deleteJob={deleteJob}
+    />
+  ))}
+</tbody>
         </table>
       </div>
 
