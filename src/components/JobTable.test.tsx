@@ -66,4 +66,32 @@ describe("JobTable", () => {
     dir: "asc",
   });
 });
+test("sorts by follow-up date when clicking the Follow-up header", () => {
+  const setSortConfig = jest.fn();
+
+  render(
+    <JobTable
+      jobs={jobs}
+      sortConfig={{ key: "createdAt", dir: "desc" }}
+      setSortConfig={setSortConfig}
+      editingId={null}
+      setEditingId={jest.fn()}
+      updateJob={jest.fn()}
+      cycleStatus={jest.fn()}
+      resetStatus={jest.fn()}
+      deleteJob={jest.fn()}
+    />,
+  );
+
+  fireEvent.click(
+  screen.getByRole("columnheader", {
+    name: "Follow-up",
+  }),
+);
+
+  expect(setSortConfig).toHaveBeenCalledWith({
+    key: "followUpDate",
+    dir: "asc",
+  });
+});
 });
