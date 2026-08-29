@@ -85,11 +85,7 @@ export default function JobRow({
       </td>
 
       {/* Follow-up date and its current state */}
-      <td
-        className={`center date-cell ${
-          followUpStatus ? `follow-up-${followUpStatus}` : ""
-        }`}
-      >
+      <td className="center date-cell">
         {editingId === job.id ? (
           <input
             type="date"
@@ -98,14 +94,19 @@ export default function JobRow({
             onChange={(e) => updateJob(job.id, "followUpDate", e.target.value)}
           />
         ) : job.followUpDate ? (
-          new Date(`${job.followUpDate}T00:00:00`).toLocaleDateString()
+          <span className={`follow-up-badge follow-up-${followUpStatus}`}>
+            {new Date(`${job.followUpDate}T00:00:00`).toLocaleDateString()}
+          </span>
         ) : (
-          "No date"
+          <span className="follow-up-empty">No date</span>
         )}
       </td>
 
       {/* Application notes */}
-      <td className="center">
+      <td
+        className="center"
+        title={editingId === job.id ? undefined : job.notes}
+      >
         {editingId === job.id ? (
           <textarea
             aria-label={`Notes for ${job.company}`}
@@ -116,7 +117,7 @@ export default function JobRow({
           job.notes || "No notes"
         )}
       </td>
-      
+
       {/* Offer link */}
       <td className="center">
         {editingId === job.id ? (

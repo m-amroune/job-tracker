@@ -90,13 +90,23 @@ export default function JobTable({
     <tr key={headerGroup.id}>
       {headerGroup.headers.map((header) => (
         <th
-          key={header.id}
-          onClick={header.column.getToggleSortingHandler()}
-        >
-          {header.isPlaceholder ? null : (
-            <table.FlexRender header={header} />
-          )}
-        </th>
+  key={header.id}
+  onClick={header.column.getToggleSortingHandler()}
+>
+  {header.isPlaceholder ? null : (
+    <span className="table-header-content">
+      <table.FlexRender header={header} />
+
+      {header.column.getIsSorted() === "asc" ? (
+  <span className="sort-indicator">↑</span>
+) : header.column.getIsSorted() === "desc" ? (
+  <span className="sort-indicator">↓</span>
+) : (
+  <span className="sort-indicator sort-indicator-idle">↕</span>
+)}
+    </span>
+  )}
+</th>
       ))}
 
       <th>Actions</th>
