@@ -10,9 +10,9 @@ A responsive job application tracker built with Next.js, React and TypeScript.
 
 ## About the Project
 
-Job Tracker is a simple application for managing job applications directly in the browser.
+Job Tracker is a responsive application for managing and following job applications directly in the browser.
 
-Applications can be added, edited, searched, filtered and sorted. Data is saved locally with `localStorage`.
+Applications can be added, edited, searched, filtered and sorted, with status tracking, notes and follow-up dates. Data is saved locally with `localStorage`.
 
 ---
 
@@ -20,9 +20,10 @@ Applications can be added, edited, searched, filtered and sorted. Data is saved 
 
 - Add, edit and delete job applications
 - Track application status from `todo` to `rejected`
-- Add follow-up dates with upcoming, today and overdue states
-- Add notes to individual applications
-- Search, filter and sort applications
+- Add offer links, notes and follow-up dates
+- Track upcoming, today and overdue follow-ups
+- Search and filter applications by status and follow-up
+- Sort applications with TanStack Table
 - Persist data with `localStorage`
 - Responsive desktop table and mobile cards
 
