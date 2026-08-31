@@ -2,6 +2,7 @@
 
 import { JobApplication } from "@/types/job";
 import { getFollowUpStatus } from "@/lib/followUp";
+import { Pencil, RotateCcw, Trash2 } from "lucide-react";
 
 interface JobCardProps {
   job: JobApplication;
@@ -60,10 +61,16 @@ export default function JobCard({
               />
             </>
           ) : (
-            <>
-              <h3>{job.company}</h3>
-              <p>{job.position}</p>
-            </>
+            <div className="job-card-company">
+              <span className="company-initial" aria-hidden="true">
+                {job.company.charAt(0).toUpperCase()}
+              </span>
+
+              <div>
+                <h3>{job.company}</h3>
+                <p>{job.position}</p>
+              </div>
+            </div>
           )}
         </div>
 
@@ -100,32 +107,34 @@ export default function JobCard({
           ) : (
             <span
               className={
-                followUpStatus ? `follow-up-${followUpStatus}` : undefined
+                followUpStatus
+                  ? `follow-up-badge follow-up-${followUpStatus}`
+                  : "follow-up-empty"
               }
             >
               {job.followUpDate
-                ? new Date(
-                    `${job.followUpDate}T00:00:00`,
-                  ).toLocaleDateString()
+                ? new Date(`${job.followUpDate}T00:00:00`).toLocaleDateString()
                 : "No date"}
             </span>
           )}
         </div>
 
         {/* Application notes */}
-<div>
-  <span className="job-card-label">Notes</span>
+        <div>
+          <span className="job-card-label">Notes</span>
 
-  {isEditing ? (
-    <textarea
-      aria-label={`Notes for ${job.company}`}
-      value={job.notes ?? ""}
-      onChange={(e) => updateJob(job.id, "notes", e.target.value)}
-    />
-  ) : (
-    <span>{job.notes || "No notes"}</span>
-  )}
-</div>
+          {isEditing ? (
+            <textarea
+              aria-label={`Notes for ${job.company}`}
+              value={job.notes ?? ""}
+              onChange={(e) => updateJob(job.id, "notes", e.target.value)}
+            />
+          ) : (
+            <span className={job.notes ? undefined : "empty-value"}>
+              {job.notes || "No notes"}
+            </span>
+          )}
+        </div>
 
         {/* Offer link */}
         <div>
@@ -142,7 +151,7 @@ export default function JobCard({
               View offer
             </a>
           ) : (
-            <span>No link</span>
+            <span className="empty-value">No link</span>
           )}
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { JobApplication } from "@/types/job";
 import { getFollowUpStatus } from "@/lib/followUp";
+import { Pencil, RotateCcw, Trash2 } from "lucide-react";
 
 interface JobRowProps {
   job: JobApplication;
@@ -50,7 +51,13 @@ export default function JobRow({
             onChange={(e) => updateJob(job.id, "company", e.target.value)}
           />
         ) : (
-          job.company
+          <div className="company-cell-content">
+            <span className="company-initial" aria-hidden="true">
+              {job.company.charAt(0).toUpperCase()}
+            </span>
+
+            <span>{job.company}</span>
+          </div>
         )}
       </td>
 
@@ -114,7 +121,7 @@ export default function JobRow({
             onChange={(e) => updateJob(job.id, "notes", e.target.value)}
           />
         ) : (
-          job.notes || "No notes"
+          job.notes || <span className="empty-value">No notes</span>
         )}
       </td>
 
@@ -131,7 +138,7 @@ export default function JobRow({
             View
           </a>
         ) : (
-          <span>No link</span>
+          <span className="empty-value">No link</span>
         )}
       </td>
 
@@ -150,11 +157,13 @@ export default function JobRow({
               className="action-secondary"
               onClick={() => setEditingId(job.id)}
             >
+              <Pencil size={15} aria-hidden="true" />
               Edit
             </button>
           )}
 
           <button className="action-reset" onClick={() => resetStatus(job.id)}>
+            <RotateCcw size={15} aria-hidden="true" />
             Reset
           </button>
 
@@ -168,6 +177,7 @@ export default function JobRow({
               }
             }}
           >
+            <Trash2 size={15} aria-hidden="true" />
             Delete
           </button>
         </div>

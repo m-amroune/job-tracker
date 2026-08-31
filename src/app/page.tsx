@@ -5,6 +5,16 @@ import { loadJobs, saveJobs } from "@/lib/storage";
 import { getFollowUpStatus } from "@/lib/followUp";
 import { JobApplication, JobStatus } from "@/types/job";
 import JobTable from "@/components/JobTable";
+import {
+  Building2,
+  BriefcaseBusiness,
+  CalendarDays,
+  FileText,
+  Link2,
+  Plus,
+  Search,
+  BarChart3,
+} from "lucide-react";
 
 // Defines the order used when cycling through application statuses.
 const STATUS_ORDER: readonly JobStatus[] = [
@@ -39,12 +49,11 @@ export default function Page() {
   // Tracks which application is currently in edit mode.
   const [editingId, setEditingId] = useState<string | null>(null);
 
-
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<JobStatus | "all">("all");
   const [followUpFilter, setFollowUpFilter] = useState<
-  "all" | "upcoming" | "today" | "overdue" | "no-date"
->("all");
+    "all" | "upcoming" | "today" | "overdue" | "no-date"
+  >("all");
 
   // Load stored applications once when the page is mounted.
   useEffect(() => {
@@ -200,39 +209,38 @@ export default function Page() {
     setJobs(updatedJobs);
     saveJobs(updatedJobs);
   }
-// Build today's local date to compare follow-up dates.
-const now = new Date();
+  // Build today's local date to compare follow-up dates.
+  const now = new Date();
 
-const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
-  2,
-  "0",
-)}-${String(now.getDate()).padStart(2, "0")}`;
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+    2,
+    "0",
+  )}-${String(now.getDate()).padStart(2, "0")}`;
 
-// Apply search, status and follow-up filters together.
-const filteredJobs = jobs.filter((job) => {
-  const q = search.toLowerCase();
+  // Apply search, status and follow-up filters together.
+  const filteredJobs = jobs.filter((job) => {
+    const q = search.toLowerCase();
 
-  const matchesSearch =
-    job.company.toLowerCase().includes(q) ||
-    job.position.toLowerCase().includes(q);
+    const matchesSearch =
+      job.company.toLowerCase().includes(q) ||
+      job.position.toLowerCase().includes(q);
 
-  const matchesStatus =
-    statusFilter === "all" ? true : job.status === statusFilter;
+    const matchesStatus =
+      statusFilter === "all" ? true : job.status === statusFilter;
 
-  let matchesFollowUp = true;
+    let matchesFollowUp = true;
 
-  if (followUpFilter === "no-date") {
-    matchesFollowUp = !job.followUpDate;
-  } else if (followUpFilter !== "all") {
-    matchesFollowUp =
-      !!job.followUpDate &&
-      getFollowUpStatus(job.followUpDate, today) === followUpFilter;
-  }
+    if (followUpFilter === "no-date") {
+      matchesFollowUp = !job.followUpDate;
+    } else if (followUpFilter !== "all") {
+      matchesFollowUp =
+        !!job.followUpDate &&
+        getFollowUpStatus(job.followUpDate, today) === followUpFilter;
+    }
 
-  return matchesSearch && matchesStatus && matchesFollowUp;
-});
+    return matchesSearch && matchesStatus && matchesFollowUp;
+  });
 
- 
   return (
     <main className="conteneur">
       <header className="page-header">
@@ -248,132 +256,187 @@ const filteredJobs = jobs.filter((job) => {
           addJob();
         }}
       >
-        <input
-          type="text"
-          aria-label="Company"
-          placeholder="Company"
-          value={company}
-          onChange={(e) => setCompany(e.target.value)}
-        />
+        <div className="form-field">
+          <label htmlFor="company">Company</label>
 
-        <input
-          type="text"
-          aria-label="Position"
-          placeholder="Position"
-          value={position}
-          onChange={(e) => setPosition(e.target.value)}
-        />
+          <div className="input-with-icon">
+            <Building2 size={17} aria-hidden="true" />
+            <input
+              id="company"
+              type="text"
+              aria-label="Company"
+              placeholder="Company"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+            />
+          </div>
+        </div>
 
-        <input
-          type="url"
-          aria-label="Offer URL"
-          placeholder="Offer URL"
-          value={offerUrl}
-          onChange={(e) => setOfferUrl(e.target.value)}
-        />
+        <div className="form-field">
+          <label htmlFor="position">Position</label>
 
-        <input
-          type="date"
-          aria-label="Follow-up date"
-          value={followUpDate}
-          onChange={(e) => setFollowUpDate(e.target.value)}
-        />
+          <div className="input-with-icon">
+            <BriefcaseBusiness size={17} aria-hidden="true" />
+            <input
+              id="position"
+              type="text"
+              aria-label="Position"
+              placeholder="Position"
+              value={position}
+              onChange={(e) => setPosition(e.target.value)}
+            />
+          </div>
+        </div>
 
-        <textarea
-          aria-label="Notes"
-          placeholder="Notes"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-        />
+        <div className="form-field">
+          <label htmlFor="offer-url">Offer URL</label>
 
-        <button type="submit">Add application</button>
+          <div className="input-with-icon">
+            <Link2 size={17} aria-hidden="true" />
+            <input
+              id="offer-url"
+              type="url"
+              aria-label="Offer URL"
+              placeholder="https://..."
+              value={offerUrl}
+              onChange={(e) => setOfferUrl(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="form-field">
+          <label htmlFor="follow-up-date">Follow-up date</label>
+
+          <div className="input-with-icon">
+            <CalendarDays size={17} aria-hidden="true" />
+            <input
+              id="follow-up-date"
+              type="date"
+              aria-label="Follow-up date"
+              value={followUpDate}
+              onChange={(e) => setFollowUpDate(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="form-field form-field-full">
+          <label htmlFor="notes">Notes</label>
+
+          <div className="input-with-icon textarea-with-icon">
+            <FileText size={17} aria-hidden="true" />
+            <textarea
+              id="notes"
+              aria-label="Notes"
+              placeholder="Notes about this application..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <button type="submit">
+          <Plus size={17} aria-hidden="true" />
+          Add application
+        </button>
       </form>
 
-      <h2 className="section-title applications-title">Applications</h2>
+      <section className="applications-panel">
+        <h2 className="section-title applications-title">Applications</h2>
 
-      <section className="tracker-toolbar">
-        <div className="filters-group">
-          <input
-            type="text"
-            aria-label="Search applications"
-            placeholder="Search company or position..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="search-input"
-          />
+        <section className="tracker-toolbar">
+          <div className="filters-group">
+            <div className="search-control">
+              <Search size={18} aria-hidden="true" />
 
-          <select
-            aria-label="Filter applications by status"
-            value={statusFilter}
-            onChange={(e) =>
-              setStatusFilter(e.target.value as JobStatus | "all")
-            }
-            className="status-filter"
-          >
-            <option value="all">All statuses</option>
-            <option value="todo">Todo</option>
-            <option value="applied">Applied</option>
-            <option value="interview">Interview</option>
-            <option value="rejected">Rejected</option>
-          </select>
-          <select
-  aria-label="Filter applications by follow-up"
-  value={followUpFilter}
-  onChange={(e) =>
-    setFollowUpFilter(
-      e.target.value as
-        | "all"
-        | "upcoming"
-        | "today"
-        | "overdue"
-        | "no-date",
-    )
-  }
-  className="status-filter"
->
-  <option value="all">All follow-ups</option>
-  <option value="upcoming">Upcoming</option>
-  <option value="today">Today</option>
-  <option value="overdue">Overdue</option>
-  <option value="no-date">No date</option>
-</select>
-        </div>
+              <input
+                type="text"
+                aria-label="Search applications"
+                placeholder="Search company or position..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="search-input"
+              />
+            </div>
 
-        <div className="offers-counter">
-          <span>Total applications</span>
-          <strong>{jobs.length}</strong>
-        </div>
+            <select
+              aria-label="Filter applications by status"
+              value={statusFilter}
+              onChange={(e) =>
+                setStatusFilter(e.target.value as JobStatus | "all")
+              }
+              className="status-filter"
+            >
+              <option value="all">All statuses</option>
+              <option value="todo">Todo</option>
+              <option value="applied">Applied</option>
+              <option value="interview">Interview</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <select
+              aria-label="Filter applications by follow-up"
+              value={followUpFilter}
+              onChange={(e) =>
+                setFollowUpFilter(
+                  e.target.value as
+                    | "all"
+                    | "upcoming"
+                    | "today"
+                    | "overdue"
+                    | "no-date",
+                )
+              }
+              className="status-filter"
+            >
+              <option value="all">All follow-ups</option>
+              <option value="upcoming">Upcoming</option>
+              <option value="today">Today</option>
+              <option value="overdue">Overdue</option>
+              <option value="no-date">No date</option>
+            </select>
+          </div>
+
+          <div className="offers-counter">
+            <div className="counter-content">
+              <span>Total applications</span>
+              <strong>{jobs.length}</strong>
+            </div>
+
+            <span className="counter-icon" aria-hidden="true">
+              <BarChart3 size={19} />
+            </span>
+          </div>
+        </section>
+
+        {filteredJobs.length === 0 ? (
+          <div className="empty-state">
+            {jobs.length === 0 ? (
+              <>
+                <p>No applications yet.</p>
+                <p>
+                  Add your first job application to start tracking your search.
+                </p>
+              </>
+            ) : (
+              <>
+                <p>No matching applications.</p>
+                <p>Try changing your search or status filter.</p>
+              </>
+            )}
+          </div>
+        ) : (
+          <div className="table-scroll">
+            <JobTable
+              jobs={filteredJobs}
+              editingId={editingId}
+              setEditingId={setEditingId}
+              updateJob={updateJob}
+              cycleStatus={cycleStatus}
+              resetStatus={resetStatus}
+              deleteJob={deleteJob}
+            />
+          </div>
+        )}
       </section>
-
-     {filteredJobs.length === 0 ? (
-        <div className="empty-state">
-          {jobs.length === 0 ? (
-            <>
-              <p>No applications yet.</p>
-              <p>
-                Add your first job application to start tracking your search.
-              </p>
-            </>
-          ) : (
-            <>
-              <p>No matching applications.</p>
-              <p>Try changing your search or status filter.</p>
-            </>
-          )}
-        </div>
-      ) : (
-        <div className="table-scroll">
-          <JobTable
-            jobs={filteredJobs}
-            editingId={editingId}
-            setEditingId={setEditingId}
-            updateJob={updateJob}
-            cycleStatus={cycleStatus}
-            resetStatus={resetStatus}
-            deleteJob={deleteJob}
-          />
-        </div>
-      )}
     </main>
   );
 }

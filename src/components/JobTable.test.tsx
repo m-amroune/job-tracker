@@ -42,36 +42,30 @@ describe("JobTable", () => {
   });
 
   test("sorts applications when a column header is clicked", () => {
-    render(
-      <JobTable
-        jobs={jobs}
-        editingId={null}
-        setEditingId={jest.fn()}
-        updateJob={jest.fn()}
-        cycleStatus={jest.fn()}
-        resetStatus={jest.fn()}
-        deleteJob={jest.fn()}
-      />,
-    );
+  render(
+    <JobTable
+      jobs={[...jobs].reverse()}
+      editingId={null}
+      setEditingId={jest.fn()}
+      updateJob={jest.fn()}
+      cycleStatus={jest.fn()}
+      resetStatus={jest.fn()}
+      deleteJob={jest.fn()}
+    />,
+  );
 
-    fireEvent.click(
-      screen.getByRole("columnheader", {
-        name: "Company",
-      }),
-    );
+  fireEvent.click(
+    screen.getByRole("columnheader", {
+      name: /Company/,
+    }),
+  );
 
-    fireEvent.click(
-      screen.getByRole("columnheader", {
-        name: "Company",
-      }),
-    );
+  const table = screen.getByRole("table");
+  const rows = within(table).getAllByRole("row");
 
-    const table = screen.getByRole("table");
-    const rows = within(table).getAllByRole("row");
-
-    expect(within(rows[1]).getByText("Tech Agency")).toBeInTheDocument();
-    expect(within(rows[2]).getByText("Nova Digital")).toBeInTheDocument();
-  });
+  expect(within(rows[1]).getByText("Nova Digital")).toBeInTheDocument();
+  expect(within(rows[2]).getByText("Tech Agency")).toBeInTheDocument();
+});
 
   test("sorts applications by follow-up date", () => {
     render(
@@ -88,8 +82,8 @@ describe("JobTable", () => {
 
     fireEvent.click(
       screen.getByRole("columnheader", {
-        name: "Follow-up",
-      }),
+  name: /Follow-up/,
+})
     );
 
     const table = screen.getByRole("table");
