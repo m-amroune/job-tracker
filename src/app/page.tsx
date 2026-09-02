@@ -35,6 +35,25 @@ function getNextStatus(current: JobStatus): JobStatus {
   return STATUS_ORDER[index + 1];
 }
 
+// Returns a local YYYY-MM-DD date relative to today.
+function getRelativeDate(offsetDays: number) {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+    2,
+    "0",
+  )}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+// Returns a creation date relative to today.
+function getRelativeCreatedAt(daysAgo: number) {
+  const date = new Date();
+  date.setDate(date.getDate() - daysAgo);
+
+  return date.toISOString();
+}
+
 export default function Page() {
   // Main application state, hydrated from localStorage on first render.
   const [jobs, setJobs] = useState<JobApplication[]>([]);
@@ -61,29 +80,97 @@ export default function Page() {
 
     // Seed demo applications when localStorage does not contain any jobs.
     if (!Array.isArray(raw) || raw.length === 0) {
-      const DEFAULT_JOBS: JobApplication[] = [
-        {
-          id: crypto.randomUUID(),
-          company: "Nova Digital",
-          position: "Frontend Developer",
-          status: "todo",
-          createdAt: "2026-02-03T09:00:00.000Z",
-        },
-        {
-          id: crypto.randomUUID(),
-          company: "Dream startup",
-          position: "React Developer",
-          status: "applied",
-          createdAt: "2025-02-06T14:30:00.000Z",
-        },
-        {
-          id: crypto.randomUUID(),
-          company: "Tech agency",
-          position: "Next.js Developer",
-          status: "interview",
-          createdAt: "2026-02-10T11:15:00.000Z",
-        },
-      ];
+     const DEFAULT_JOBS: JobApplication[] = [
+  {
+    id: crypto.randomUUID(),
+    company: "Nova Digital",
+    position: "Frontend Developer",
+    status: "todo",
+    createdAt: getRelativeCreatedAt(2),
+    followUpDate: getRelativeDate(7),
+    offerUrl: "https://example.com/jobs/frontend-developer",
+  },
+  {
+    id: crypto.randomUUID(),
+    company: "Dream startup",
+    position: "React Developer",
+    status: "applied",
+    createdAt: getRelativeCreatedAt(5),
+    followUpDate: getRelativeDate(0),
+    notes: "Application sent after speaking with the recruiter.",
+  },
+  {
+    id: crypto.randomUUID(),
+    company: "Tech agency",
+    position: "Next.js Developer",
+    status: "interview",
+    createdAt: getRelativeCreatedAt(9),
+    followUpDate: getRelativeDate(35),
+    offerUrl: "https://example.com/jobs/nextjs-developer",
+    notes: "Technical interview scheduled.",
+  },
+  {
+    id: crypto.randomUUID(),
+    company: "Bright Labs",
+    position: "React Developer",
+    status: "applied",
+    createdAt: getRelativeCreatedAt(12),
+    followUpDate: getRelativeDate(-4),
+    offerUrl: "https://example.com/jobs/react-developer",
+    notes: "Follow up with the hiring manager.",
+  },
+  {
+    id: crypto.randomUUID(),
+    company: "Orbit Systems",
+    position: "Frontend Engineer",
+    status: "applied",
+    createdAt: getRelativeCreatedAt(7),
+    followUpDate: getRelativeDate(4),
+  },
+  {
+    id: crypto.randomUUID(),
+    company: "Northstar Tech",
+    position: "TypeScript Developer",
+    status: "interview",
+    createdAt: getRelativeCreatedAt(14),
+    followUpDate: getRelativeDate(21),
+    offerUrl: "https://example.com/jobs/typescript-developer",
+    notes: "Prepare examples of recent React projects.",
+  },
+  {
+    id: crypto.randomUUID(),
+    company: "PixelForge",
+    position: "UI Developer",
+    status: "todo",
+    createdAt: getRelativeCreatedAt(1),
+    offerUrl: "https://example.com/jobs/ui-developer",
+  },
+  {
+    id: crypto.randomUUID(),
+    company: "CloudNest",
+    position: "React Engineer",
+    status: "rejected",
+    createdAt: getRelativeCreatedAt(24),
+    notes: "Position filled internally.",
+  },
+  {
+    id: crypto.randomUUID(),
+    company: "BluePeak",
+    position: "React TypeScript Developer",
+    status: "applied",
+    createdAt: getRelativeCreatedAt(10),
+    followUpDate: getRelativeDate(10),
+    offerUrl: "https://example.com/jobs/react-typescript",
+  },
+  {
+    id: crypto.randomUUID(),
+    company: "Horizon Labs",
+    position: "Web Developer",
+    status: "rejected",
+    createdAt: getRelativeCreatedAt(30),
+    notes: "Keep the company in mind for future openings.",
+  },
+];
 
       setJobs(DEFAULT_JOBS);
       saveJobs(DEFAULT_JOBS);

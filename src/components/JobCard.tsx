@@ -170,12 +170,14 @@ export default function JobCard({
             className="action-secondary"
             onClick={() => setEditingId(job.id)}
           >
-            Edit
+            <Pencil size={15} aria-hidden="true" />
+Edit
           </button>
         )}
 
         <button className="action-reset" onClick={() => resetStatus(job.id)}>
-          Reset
+          <RotateCcw size={15} aria-hidden="true" />
+Reset
         </button>
 
         <button
@@ -186,7 +188,8 @@ export default function JobCard({
             }
           }}
         >
-          Delete
+          <Trash2 size={15} aria-hidden="true" />
+Delete
         </button>
       </div>
     </article>

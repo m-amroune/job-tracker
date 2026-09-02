@@ -1,3 +1,4 @@
+import { useState } from "react";
 import JobRow from "./JobRow";
 import JobCard from "./JobCard";
 import { JobApplication } from "@/types/job";
@@ -38,13 +39,15 @@ const columns: Array<ColumnDef<typeof features, JobApplication>> = [
     header: "Follow-up",
   },
   {
-    accessorKey: "notes",
-    header: "Notes",
-  },
+  accessorKey: "notes",
+  header: "Notes",
+  enableSorting: false,
+},
   {
-    accessorKey: "offerUrl",
-    header: "Link",
-  },
+  accessorKey: "offerUrl",
+  header: "Offer",
+  enableSorting: false,
+},
 ];
 
 interface JobTableProps {
@@ -75,6 +78,11 @@ export default function JobTable({
   resetStatus,
   deleteJob,
 }: JobTableProps) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+function toggleDetails(id: string) {
+  setExpandedId((currentId) => (currentId === id ? null : id));
+}
   const table = useTable({
   features,
   columns,
@@ -89,20 +97,29 @@ export default function JobTable({
   {table.getHeaderGroups().map((headerGroup) => (
     <tr key={headerGroup.id}>
       {headerGroup.headers.map((header) => (
-        <th
+      <th
   key={header.id}
-  onClick={header.column.getToggleSortingHandler()}
+  className={header.column.getCanSort() ? "sortable-header" : undefined}
+  onClick={
+    header.column.getCanSort()
+      ? header.column.getToggleSortingHandler()
+      : undefined
+  }
 >
   {header.isPlaceholder ? null : (
     <span className="table-header-content">
       <table.FlexRender header={header} />
 
-      {header.column.getIsSorted() === "asc" ? (
-  <span className="sort-indicator">↑</span>
-) : header.column.getIsSorted() === "desc" ? (
-  <span className="sort-indicator">↓</span>
-) : (
-  <span className="sort-indicator sort-indicator-idle">↕</span>
+    {header.column.getCanSort() && (
+  <>
+    {header.column.getIsSorted() === "asc" ? (
+      <span className="sort-indicator">↑</span>
+    ) : header.column.getIsSorted() === "desc" ? (
+      <span className="sort-indicator">↓</span>
+    ) : (
+      <span className="sort-indicator sort-indicator-idle">↕</span>
+    )}
+  </>
 )}
     </span>
   )}
@@ -125,6 +142,8 @@ export default function JobTable({
       cycleStatus={cycleStatus}
       resetStatus={resetStatus}
       deleteJob={deleteJob}
+      isExpanded={expandedId === row.original.id}
+onToggleDetails={() => toggleDetails(row.original.id)}
     />
   ))}
 </tbody>

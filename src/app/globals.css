@@ -431,11 +431,21 @@ table {
   font-size: 0.97rem;
 }
 
+.desktop-table table {
+  width: 100%;
+  max-width: 1050px;
+  margin: 1rem auto 0;
+}
+
+
 thead th {
   background-color: #f8fafc;
   color: #334155;
   font-weight: 700;
   text-align: center;
+}
+
+.sortable-header {
   cursor: pointer;
 }
 
@@ -476,6 +486,12 @@ td input {
   gap: 0.65rem;
 }
 
+.company-name {
+  white-space: nowrap;
+}
+
+
+
 .company-initial {
   display: inline-flex;
   align-items: center;
@@ -488,6 +504,86 @@ td input {
   color: var(--primary);
   font-size: 0.78rem;
   font-weight: 700;
+}
+
+.company-name {
+  white-space: nowrap;
+}
+
+
+
+
+
+
+.job-details-row,
+.job-details-row:hover {
+  background: transparent;
+  box-shadow: none;
+}
+
+.job-details-row > td {
+  padding: 0 14px 14px;
+  border-bottom: 1px solid #edf1f5;
+}
+
+.job-details-panel {
+  display: grid;
+ grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 1rem 1.1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.job-detail-block {
+  min-width: 0;
+}
+
+.job-detail-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.job-detail-text {
+  margin: 0;
+  color: #334155;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.job-detail-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.job-detail-link:hover {
+  text-decoration: underline;
+}
+
+.job-details-panel input,
+.job-details-panel textarea {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #dbe3ee;
+  border-radius: 9px;
+  background: #ffffff;
+  color: var(--foreground);
+  font: inherit;
+}
+
+.job-details-panel textarea {
+  min-height: 80px;
+  resize: vertical;
 }
 
 /* Status badges */
@@ -591,25 +687,6 @@ td.date-cell {
   text-align: center;
 }
 
-.desktop-table th:nth-child(1),
-.desktop-table th:nth-child(2),
-.desktop-table th:nth-child(6),
-.desktop-table td:nth-child(1),
-.desktop-table td:nth-child(2),
-.desktop-table td:nth-child(6) {
-  text-align: left;
-}
-
-.desktop-table td:nth-child(6) {
-  max-width: 220px;
-}
-
-.desktop-table td:nth-child(6) {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .table-header-content {
   display: inline-flex;
   align-items: center;
@@ -628,10 +705,68 @@ td.date-cell {
   opacity: 0.8;
 }
 
+.offer-cell {
+  text-align: center;
+}
+
+.notes-cell {
+  text-align: center;
+}
+
+.notes-button,
+.notes-empty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.notes-button {
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--primary);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.notes-button:hover,
+.notes-button.is-open {
+  background: #e8f0ff;
+}
+
+.notes-empty {
+  color: #cbd5e1;
+}
+
+.offer-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: var(--primary);
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.offer-link:hover {
+  background: #e8f0ff;
+}
+
+.offer-empty {
+  color: #94a3b8;
+}
+
 /* Table actions */
 
 td.actions {
-  min-width: 210px;
+  text-align: center;
 }
 
 .actions {
@@ -642,9 +777,15 @@ td.actions {
 
 .action-wrapper {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  flex-wrap: nowrap;
+  align-items: center;
   justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.desktop-table thead th:last-child {
+  text-align: center;
 }
 
 .actions button {
@@ -658,6 +799,13 @@ td.actions {
   justify-content: center;
   gap: 0.35rem;
   white-space: nowrap;
+}
+
+.actions .action-icon {
+  width: 36px;
+  min-width: 36px;
+  height: 34px;
+  padding: 0;
 }
 
 .actions .action-secondary {
@@ -690,6 +838,14 @@ td.actions {
 .actions .danger:hover {
   background-color: #fff5f3;
   border-color: #dc9b93;
+}
+
+.action-icon {
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
 }
 
 /* Empty state */
@@ -783,9 +939,9 @@ td.actions {
   min-width: 0;
   min-height: 38px;
   display: inline-flex;
-align-items: center;
-justify-content: center;
-gap: 0.35rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
 }
 
 .job-card-actions .action-secondary {
