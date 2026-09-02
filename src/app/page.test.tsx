@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import Home from "./page";
 
 describe("Home page", () => {
@@ -13,48 +13,23 @@ describe("Home page", () => {
     expect(await screen.findAllByText("Dream startup")).toHaveLength(2);
     expect(await screen.findAllByText("Tech agency")).toHaveLength(2);
   });
-  test("adds an application and clears the form", async () => {
+test("adds an application and clears the form", async () => {
   render(<Home />);
 
   await screen.findAllByText("Nova Digital");
-
-  const companyInput = screen.getByRole("textbox", {
-    name: "Company",
-  });
-  const positionInput = screen.getByRole("textbox", {
-    name: "Position",
-  });
-  const offerUrlInput = screen.getByRole("textbox", {
-    name: "Offer URL",
-  });
-
-  fireEvent.change(companyInput, {
-    target: { value: "Acme Studio" },
-  });
-  fireEvent.change(positionInput, {
-    target: { value: "React Developer" },
-  });
-  fireEvent.change(offerUrlInput, {
-    target: { value: "https://example.com/acme-job" },
-  });
 
   fireEvent.click(
-    screen.getByRole("button", { name: "Add application" }),
+    screen.getByRole("button", {
+      name: "Add application",
+    }),
   );
 
-  expect(await screen.findAllByText("Acme Studio")).toHaveLength(2);
-  expect(companyInput).toHaveValue("");
-  expect(positionInput).toHaveValue("");
-  expect(offerUrlInput).toHaveValue("");
-});
-
-test("saves the follow-up date when adding an application", async () => {
-  render(<Home />);
-
-  await screen.findAllByText("Nova Digital");
+  const dialog = screen.getByRole("dialog", {
+    name: "Add application",
+  });
 
   fireEvent.change(
-    screen.getByRole("textbox", {
+    within(dialog).getByRole("textbox", {
       name: "Company",
     }),
     {
@@ -63,7 +38,7 @@ test("saves the follow-up date when adding an application", async () => {
   );
 
   fireEvent.change(
-    screen.getByRole("textbox", {
+    within(dialog).getByRole("textbox", {
       name: "Position",
     }),
     {
@@ -72,14 +47,67 @@ test("saves the follow-up date when adding an application", async () => {
   );
 
   fireEvent.change(
-    screen.getByLabelText("Follow-up date"),
+    within(dialog).getByRole("textbox", {
+      name: "Offer URL",
+    }),
     {
-      target: { value: "2026-08-25" },
+      target: { value: "https://example.com/acme-job" },
     },
   );
 
   fireEvent.click(
+    within(dialog).getByRole("button", {
+      name: "Add application",
+    }),
+  );
+
+  expect(await screen.findAllByText("Acme Studio")).toHaveLength(2);
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+  fireEvent.click(
     screen.getByRole("button", {
+      name: "Add application",
+    }),
+  );
+
+  const reopenedDialog = screen.getByRole("dialog", {
+    name: "Add application",
+  });
+
+  expect(within(reopenedDialog).getByLabelText("Company")).toHaveValue("");
+  expect(within(reopenedDialog).getByLabelText("Position")).toHaveValue("");
+  expect(within(reopenedDialog).getByLabelText("Offer URL")).toHaveValue("");
+});
+
+test("saves the follow-up date when adding an application", async () => {
+  render(<Home />);
+
+  await screen.findAllByText("Nova Digital");
+
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Add application",
+    }),
+  );
+
+  const dialog = screen.getByRole("dialog", {
+    name: "Add application",
+  });
+
+  fireEvent.change(within(dialog).getByLabelText("Company"), {
+    target: { value: "Acme Studio" },
+  });
+
+  fireEvent.change(within(dialog).getByLabelText("Position"), {
+    target: { value: "React Developer" },
+  });
+
+  fireEvent.change(within(dialog).getByLabelText("Follow-up date"), {
+    target: { value: "2026-08-25" },
+  });
+
+  fireEvent.click(
+    within(dialog).getByRole("button", {
       name: "Add application",
     }),
   );
@@ -92,26 +120,35 @@ test("saves the follow-up date when adding an application", async () => {
 
   expect(savedJob.followUpDate).toBe("2026-08-25");
 });
-
 test("saves notes when adding an application", async () => {
   render(<Home />);
 
   await screen.findAllByText("Nova Digital");
 
-  fireEvent.change(screen.getByLabelText("Company"), {
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Add application",
+    }),
+  );
+
+  const dialog = screen.getByRole("dialog", {
+    name: "Add application",
+  });
+
+  fireEvent.change(within(dialog).getByLabelText("Company"), {
     target: { value: "Acme Studio" },
   });
 
-  fireEvent.change(screen.getByLabelText("Position"), {
+  fireEvent.change(within(dialog).getByLabelText("Position"), {
     target: { value: "React Developer" },
   });
 
-  fireEvent.change(screen.getByLabelText("Notes"), {
+  fireEvent.change(within(dialog).getByLabelText("Notes"), {
     target: { value: "Contacted recruiter on LinkedIn" },
   });
 
   fireEvent.click(
-    screen.getByRole("button", {
+    within(dialog).getByRole("button", {
       name: "Add application",
     }),
   );
@@ -124,7 +161,6 @@ test("saves notes when adding an application", async () => {
 
   expect(savedJob.notes).toBe("Contacted recruiter on LinkedIn");
 });
-
 
 test("filters applications with the search field", async () => {
   render(<Home />);
@@ -168,20 +204,30 @@ test("filters applications by follow-up status", async () => {
 
   await screen.findAllByText("Nova Digital");
 
-  fireEvent.change(screen.getByLabelText("Company"), {
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Add application",
+    }),
+  );
+
+  const dialog = screen.getByRole("dialog", {
+    name: "Add application",
+  });
+
+  fireEvent.change(within(dialog).getByLabelText("Company"), {
     target: { value: "Acme Studio" },
   });
 
-  fireEvent.change(screen.getByLabelText("Position"), {
+  fireEvent.change(within(dialog).getByLabelText("Position"), {
     target: { value: "React Developer" },
   });
 
-  fireEvent.change(screen.getByLabelText("Follow-up date"), {
+  fireEvent.change(within(dialog).getByLabelText("Follow-up date"), {
     target: { value: "2099-01-01" },
   });
 
   fireEvent.click(
-    screen.getByRole("button", {
+    within(dialog).getByRole("button", {
       name: "Add application",
     }),
   );

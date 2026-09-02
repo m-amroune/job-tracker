@@ -6,14 +6,15 @@ import { getFollowUpStatus } from "@/lib/followUp";
 import { JobApplication, JobStatus } from "@/types/job";
 import JobTable from "@/components/JobTable";
 import {
-  Building2,
+  BarChart3,
   BriefcaseBusiness,
+  Building2,
   CalendarDays,
   FileText,
   Link2,
   Plus,
   Search,
-  BarChart3,
+  X,
 } from "lucide-react";
 
 // Defines the order used when cycling through application statuses.
@@ -64,6 +65,25 @@ export default function Page() {
   const [offerUrl, setOfferUrl] = useState("");
   const [followUpDate, setFollowUpDate] = useState("");
   const [notes, setNotes] = useState("");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  useEffect(() => {
+  if (!isAddModalOpen) return;
+  document.body.style.overflow = "hidden";
+
+  function handleKeyDown(event: KeyboardEvent) {
+    if (event.key === "Escape") {
+      setIsAddModalOpen(false);
+    }
+  }
+
+  window.addEventListener("keydown", handleKeyDown);
+
+  return () => {
+    document.body.style.overflow = "";
+    window.removeEventListener("keydown", handleKeyDown);
+  };
+}, [isAddModalOpen]);
 
   // Tracks which application is currently in edit mode.
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -251,6 +271,7 @@ export default function Page() {
     setOfferUrl("");
     setFollowUpDate("");
     setNotes("");
+    setIsAddModalOpen(false);
   }
 
   // Move an application to the next status and persist the change.
@@ -334,101 +355,149 @@ export default function Page() {
         <h1 className="main-title">Job Tracker</h1>
       </header>
 
-      <h2 className="section-title">New application</h2>
+      {isAddModalOpen && (
+  <div
+  className="modal-overlay"
+  onMouseDown={(event) => {
+    if (event.target === event.currentTarget) {
+      setIsAddModalOpen(false);
+    }
+  }}
+>
+    <div
+      className="add-application-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="add-application-title"
+    >
+      <div className="modal-header">
+        <h2 id="add-application-title">Add application</h2>
+
+        <button
+          type="button"
+          className="modal-close"
+          aria-label="Close add application dialog"
+          onClick={() => setIsAddModalOpen(false)}
+        >
+          <X size={20} aria-hidden="true" />
+        </button>
+      </div>
 
       <form
-        className="form-row"
+        className="form-row modal-form"
         onSubmit={(e) => {
           e.preventDefault();
           addJob();
         }}
       >
-        <div className="form-field">
-          <label htmlFor="company">Company</label>
+      <div className="form-field">
+  <label htmlFor="company">Company</label>
 
-          <div className="input-with-icon">
-            <Building2 size={17} aria-hidden="true" />
-            <input
-              id="company"
-              type="text"
-              aria-label="Company"
-              placeholder="Company"
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-            />
-          </div>
-        </div>
+  <div className="input-with-icon">
+    <Building2 size={17} aria-hidden="true" />
+    <input
+      id="company"
+      type="text"
+      aria-label="Company"
+      placeholder="Company"
+      value={company}
+      onChange={(e) => setCompany(e.target.value)}
+    />
+  </div>
+</div>
 
-        <div className="form-field">
-          <label htmlFor="position">Position</label>
+<div className="form-field">
+  <label htmlFor="position">Position</label>
 
-          <div className="input-with-icon">
-            <BriefcaseBusiness size={17} aria-hidden="true" />
-            <input
-              id="position"
-              type="text"
-              aria-label="Position"
-              placeholder="Position"
-              value={position}
-              onChange={(e) => setPosition(e.target.value)}
-            />
-          </div>
-        </div>
+  <div className="input-with-icon">
+    <BriefcaseBusiness size={17} aria-hidden="true" />
+    <input
+      id="position"
+      type="text"
+      aria-label="Position"
+      placeholder="Position"
+      value={position}
+      onChange={(e) => setPosition(e.target.value)}
+    />
+  </div>
+</div>
 
-        <div className="form-field">
-          <label htmlFor="offer-url">Offer URL</label>
+<div className="form-field">
+  <label htmlFor="offer-url">Offer URL</label>
 
-          <div className="input-with-icon">
-            <Link2 size={17} aria-hidden="true" />
-            <input
-              id="offer-url"
-              type="url"
-              aria-label="Offer URL"
-              placeholder="https://..."
-              value={offerUrl}
-              onChange={(e) => setOfferUrl(e.target.value)}
-            />
-          </div>
-        </div>
+  <div className="input-with-icon">
+    <Link2 size={17} aria-hidden="true" />
+    <input
+      id="offer-url"
+      type="url"
+      aria-label="Offer URL"
+      placeholder="https://..."
+      value={offerUrl}
+      onChange={(e) => setOfferUrl(e.target.value)}
+    />
+  </div>
+</div>
 
-        <div className="form-field">
-          <label htmlFor="follow-up-date">Follow-up date</label>
+<div className="form-field">
+  <label htmlFor="follow-up-date">Follow-up date</label>
 
-          <div className="input-with-icon">
-            <CalendarDays size={17} aria-hidden="true" />
-            <input
-              id="follow-up-date"
-              type="date"
-              aria-label="Follow-up date"
-              value={followUpDate}
-              onChange={(e) => setFollowUpDate(e.target.value)}
-            />
-          </div>
-        </div>
+  <div className="input-with-icon">
+    <CalendarDays size={17} aria-hidden="true" />
+    <input
+      id="follow-up-date"
+      type="date"
+      aria-label="Follow-up date"
+      value={followUpDate}
+      onChange={(e) => setFollowUpDate(e.target.value)}
+    />
+  </div>
+</div>
 
-        <div className="form-field form-field-full">
-          <label htmlFor="notes">Notes</label>
+<div className="form-field form-field-full">
+  <label htmlFor="notes">Notes</label>
 
-          <div className="input-with-icon textarea-with-icon">
-            <FileText size={17} aria-hidden="true" />
-            <textarea
-              id="notes"
-              aria-label="Notes"
-              placeholder="Notes about this application..."
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-            />
-          </div>
-        </div>
+  <div className="input-with-icon textarea-with-icon">
+    <FileText size={17} aria-hidden="true" />
+    <textarea
+      id="notes"
+      aria-label="Notes"
+      placeholder="Notes about this application..."
+      value={notes}
+      onChange={(e) => setNotes(e.target.value)}
+    />
+  </div>
+</div>
+        <div className="modal-actions">
+  <button
+    type="button"
+    className="modal-cancel"
+    onClick={() => setIsAddModalOpen(false)}
+  >
+    Cancel
+  </button>
 
-        <button type="submit">
-          <Plus size={17} aria-hidden="true" />
-          Add application
-        </button>
+  <button type="submit" className="modal-submit">
+    <Plus size={17} aria-hidden="true" />
+    Add application
+  </button>
+</div>
       </form>
-
+    </div>
+  </div>
+)}
       <section className="applications-panel">
-        <h2 className="section-title applications-title">Applications</h2>
+  <div className="applications-header">
+    <h2 className="section-title applications-title">Applications</h2>
+
+    <button
+      type="button"
+      className="add-application-trigger"
+      onClick={() => setIsAddModalOpen(true)}
+    >
+      <Plus size={17} aria-hidden="true" />
+      Add application
+    </button>
+  </div>
 
         <section className="tracker-toolbar">
           <div className="filters-group">
