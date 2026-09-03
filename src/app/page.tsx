@@ -10,11 +10,12 @@ import {
   BriefcaseBusiness,
   Building2,
   CalendarDays,
-  FileText,
   Link2,
   Plus,
   Search,
   X,
+  CalendarCheck2,
+  ClockAlert,
 } from "lucide-react";
 
 // Defines the order used when cycling through application statuses.
@@ -59,34 +60,86 @@ export default function Page() {
   // Main application state, hydrated from localStorage on first render.
   const [jobs, setJobs] = useState<JobApplication[]>([]);
 
-  // Controlled inputs for the creation form.
+  // Controlled inputs for the application form.
   const [company, setCompany] = useState("");
   const [position, setPosition] = useState("");
   const [offerUrl, setOfferUrl] = useState("");
   const [followUpDate, setFollowUpDate] = useState("");
-  const [notes, setNotes] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
-  if (!isAddModalOpen) return;
-  document.body.style.overflow = "hidden";
+    if (!isAddModalOpen) return;
+    document.body.style.overflow = "hidden";
 
-  function handleKeyDown(event: KeyboardEvent) {
-    if (event.key === "Escape") {
-      setIsAddModalOpen(false);
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsAddModalOpen(false);
+      }
     }
-  }
 
-  window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
 
-  return () => {
-    document.body.style.overflow = "";
-    window.removeEventListener("keydown", handleKeyDown);
-  };
-}, [isAddModalOpen]);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isAddModalOpen]);
 
   // Tracks which application is currently in edit mode.
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  function clearApplicationForm() {
+    setCompany("");
+    setPosition("");
+    setOfferUrl("");
+    setFollowUpDate("");
+  }
+
+  function closeApplicationModal() {
+    clearApplicationForm();
+    setEditingId(null);
+    setIsAddModalOpen(false);
+  }
+
+  function openAddApplicationModal() {
+    clearApplicationForm();
+    setEditingId(null);
+    setIsAddModalOpen(true);
+  }
+
+  function openEditApplicationModal(job: JobApplication) {
+    setCompany(job.company);
+    setPosition(job.position);
+    setOfferUrl(job.offerUrl ?? "");
+    setFollowUpDate(job.followUpDate ?? "");
+    setEditingId(job.id);
+    setIsAddModalOpen(true);
+  }
+
+  function saveApplication() {
+    if (!editingId) {
+      addJob();
+      return;
+    }
+
+    if (!company.trim() || !position.trim()) return;
+
+    const updatedJobs = jobs.map((job) =>
+      job.id === editingId
+        ? {
+            ...job,
+            company: company.trim(),
+            position: position.trim(),
+            offerUrl: offerUrl.trim() || undefined,
+            followUpDate: followUpDate || undefined,
+          }
+        : job,
+    );
+
+    setJobs(updatedJobs);
+    saveJobs(updatedJobs);
+    closeApplicationModal();
+  }
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<JobStatus | "all">("all");
@@ -94,103 +147,111 @@ export default function Page() {
     "all" | "upcoming" | "today" | "overdue" | "no-date"
   >("all");
 
+  const statusCounts = {
+    all: jobs.length,
+    todo: jobs.filter((job) => job.status === "todo").length,
+    applied: jobs.filter((job) => job.status === "applied").length,
+    interview: jobs.filter((job) => job.status === "interview").length,
+    rejected: jobs.filter((job) => job.status === "rejected").length,
+  };
+
   // Load stored applications once when the page is mounted.
   useEffect(() => {
     const raw = loadJobs();
 
     // Seed demo applications when localStorage does not contain any jobs.
     if (!Array.isArray(raw) || raw.length === 0) {
-     const DEFAULT_JOBS: JobApplication[] = [
-  {
-    id: crypto.randomUUID(),
-    company: "Nova Digital",
-    position: "Frontend Developer",
-    status: "todo",
-    createdAt: getRelativeCreatedAt(2),
-    followUpDate: getRelativeDate(7),
-    offerUrl: "https://example.com/jobs/frontend-developer",
-  },
-  {
-    id: crypto.randomUUID(),
-    company: "Dream startup",
-    position: "React Developer",
-    status: "applied",
-    createdAt: getRelativeCreatedAt(5),
-    followUpDate: getRelativeDate(0),
-    notes: "Application sent after speaking with the recruiter.",
-  },
-  {
-    id: crypto.randomUUID(),
-    company: "Tech agency",
-    position: "Next.js Developer",
-    status: "interview",
-    createdAt: getRelativeCreatedAt(9),
-    followUpDate: getRelativeDate(35),
-    offerUrl: "https://example.com/jobs/nextjs-developer",
-    notes: "Technical interview scheduled.",
-  },
-  {
-    id: crypto.randomUUID(),
-    company: "Bright Labs",
-    position: "React Developer",
-    status: "applied",
-    createdAt: getRelativeCreatedAt(12),
-    followUpDate: getRelativeDate(-4),
-    offerUrl: "https://example.com/jobs/react-developer",
-    notes: "Follow up with the hiring manager.",
-  },
-  {
-    id: crypto.randomUUID(),
-    company: "Orbit Systems",
-    position: "Frontend Engineer",
-    status: "applied",
-    createdAt: getRelativeCreatedAt(7),
-    followUpDate: getRelativeDate(4),
-  },
-  {
-    id: crypto.randomUUID(),
-    company: "Northstar Tech",
-    position: "TypeScript Developer",
-    status: "interview",
-    createdAt: getRelativeCreatedAt(14),
-    followUpDate: getRelativeDate(21),
-    offerUrl: "https://example.com/jobs/typescript-developer",
-    notes: "Prepare examples of recent React projects.",
-  },
-  {
-    id: crypto.randomUUID(),
-    company: "PixelForge",
-    position: "UI Developer",
-    status: "todo",
-    createdAt: getRelativeCreatedAt(1),
-    offerUrl: "https://example.com/jobs/ui-developer",
-  },
-  {
-    id: crypto.randomUUID(),
-    company: "CloudNest",
-    position: "React Engineer",
-    status: "rejected",
-    createdAt: getRelativeCreatedAt(24),
-    notes: "Position filled internally.",
-  },
-  {
-    id: crypto.randomUUID(),
-    company: "BluePeak",
-    position: "React TypeScript Developer",
-    status: "applied",
-    createdAt: getRelativeCreatedAt(10),
-    followUpDate: getRelativeDate(10),
-    offerUrl: "https://example.com/jobs/react-typescript",
-  },
-  {
-    id: crypto.randomUUID(),
-    company: "Horizon Labs",
-    position: "Web Developer",
-    status: "rejected",
-    createdAt: getRelativeCreatedAt(30),
-    notes: "Keep the company in mind for future openings.",
-  },
-];
+      const DEFAULT_JOBS: JobApplication[] = [
+        {
+          id: crypto.randomUUID(),
+          company: "Nova Digital",
+          position: "Frontend Developer",
+          status: "todo",
+          createdAt: getRelativeCreatedAt(2),
+          followUpDate: getRelativeDate(7),
+          offerUrl: "https://example.com/jobs/frontend-developer",
+        },
+        {
+          id: crypto.randomUUID(),
+          company: "Dream startup",
+          position: "React Developer",
+          status: "applied",
+          createdAt: getRelativeCreatedAt(5),
+          followUpDate: getRelativeDate(0),
+          notes: "Application sent after speaking with the recruiter.",
+        },
+        {
+          id: crypto.randomUUID(),
+          company: "Tech agency",
+          position: "Next.js Developer",
+          status: "interview",
+          createdAt: getRelativeCreatedAt(9),
+          followUpDate: getRelativeDate(35),
+          offerUrl: "https://example.com/jobs/nextjs-developer",
+          notes: "Technical interview scheduled.",
+        },
+        {
+          id: crypto.randomUUID(),
+          company: "Bright Labs",
+          position: "React Developer",
+          status: "applied",
+          createdAt: getRelativeCreatedAt(12),
+          followUpDate: getRelativeDate(-4),
+          offerUrl: "https://example.com/jobs/react-developer",
+          notes: "Follow up with the hiring manager.",
+        },
+        {
+          id: crypto.randomUUID(),
+          company: "Orbit Systems",
+          position: "Frontend Engineer",
+          status: "applied",
+          createdAt: getRelativeCreatedAt(7),
+          followUpDate: getRelativeDate(4),
+        },
+        {
+          id: crypto.randomUUID(),
+          company: "Northstar Tech",
+          position: "TypeScript Developer",
+          status: "interview",
+          createdAt: getRelativeCreatedAt(14),
+          followUpDate: getRelativeDate(21),
+          offerUrl: "https://example.com/jobs/typescript-developer",
+          notes: "Prepare examples of recent React projects.",
+        },
+        {
+          id: crypto.randomUUID(),
+          company: "PixelForge",
+          position: "UI Developer",
+          status: "todo",
+          createdAt: getRelativeCreatedAt(1),
+          offerUrl: "https://example.com/jobs/ui-developer",
+        },
+        {
+          id: crypto.randomUUID(),
+          company: "CloudNest",
+          position: "React Engineer",
+          status: "rejected",
+          createdAt: getRelativeCreatedAt(24),
+          notes: "Position filled internally.",
+        },
+        {
+          id: crypto.randomUUID(),
+          company: "BluePeak",
+          position: "React TypeScript Developer",
+          status: "applied",
+          createdAt: getRelativeCreatedAt(10),
+          followUpDate: getRelativeDate(10),
+          offerUrl: "https://example.com/jobs/react-typescript",
+        },
+        {
+          id: crypto.randomUUID(),
+          company: "Horizon Labs",
+          position: "Web Developer",
+          status: "rejected",
+          createdAt: getRelativeCreatedAt(30),
+          notes: "Keep the company in mind for future openings.",
+        },
+      ];
 
       setJobs(DEFAULT_JOBS);
       saveJobs(DEFAULT_JOBS);
@@ -247,6 +308,7 @@ export default function Page() {
   }, []);
 
   // Create a new application and persist the updated list.
+  // Create a new application and persist the updated list.
   function addJob() {
     if (!company.trim() || !position.trim()) return;
 
@@ -256,7 +318,6 @@ export default function Page() {
       position: position.trim(),
       offerUrl: offerUrl.trim() || undefined,
       followUpDate: followUpDate || undefined,
-      notes: notes.trim() || undefined,
       status: "todo",
       createdAt: new Date().toISOString(),
     };
@@ -270,7 +331,6 @@ export default function Page() {
     setPosition("");
     setOfferUrl("");
     setFollowUpDate("");
-    setNotes("");
     setIsAddModalOpen(false);
   }
 
@@ -325,6 +385,18 @@ export default function Page() {
     "0",
   )}-${String(now.getDate()).padStart(2, "0")}`;
 
+  const interviewCount = jobs.filter(
+    (job) => job.status === "interview",
+  ).length;
+
+  const followUpsDueCount = jobs.filter((job) => {
+    if (!job.followUpDate) return false;
+
+    const followUpStatus = getFollowUpStatus(job.followUpDate, today);
+
+    return followUpStatus === "today" || followUpStatus === "overdue";
+  }).length;
+
   // Apply search, status and follow-up filters together.
   const filteredJobs = jobs.filter((job) => {
     const q = search.toLowerCase();
@@ -356,148 +428,136 @@ export default function Page() {
       </header>
 
       {isAddModalOpen && (
-  <div
-  className="modal-overlay"
-  onMouseDown={(event) => {
-    if (event.target === event.currentTarget) {
-      setIsAddModalOpen(false);
-    }
-  }}
->
-    <div
-      className="add-application-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="add-application-title"
-    >
-      <div className="modal-header">
-        <h2 id="add-application-title">Add application</h2>
-
-        <button
-          type="button"
-          className="modal-close"
-          aria-label="Close add application dialog"
-          onClick={() => setIsAddModalOpen(false)}
+        <div
+          className="modal-overlay"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              closeApplicationModal();
+            }
+          }}
         >
-          <X size={20} aria-hidden="true" />
-        </button>
-      </div>
+          <div
+            className="add-application-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="application-modal-title"
+          >
+            <div className="modal-header">
+              <h2 id="application-modal-title">
+                {editingId ? "Edit application" : "Add application"}
+              </h2>
 
-      <form
-        className="form-row modal-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          addJob();
-        }}
-      >
-      <div className="form-field">
-  <label htmlFor="company">Company</label>
+              <button
+                type="button"
+                className="modal-close"
+                aria-label="Close application dialog"
+                onClick={closeApplicationModal}
+              >
+                <X size={20} aria-hidden="true" />
+              </button>
+            </div>
 
-  <div className="input-with-icon">
-    <Building2 size={17} aria-hidden="true" />
-    <input
-      id="company"
-      type="text"
-      aria-label="Company"
-      placeholder="Company"
-      value={company}
-      onChange={(e) => setCompany(e.target.value)}
-    />
-  </div>
-</div>
+            <form
+              className="form-row modal-form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                saveApplication();
+              }}
+            >
+              <div className="form-field">
+                <label htmlFor="company">Company</label>
 
-<div className="form-field">
-  <label htmlFor="position">Position</label>
+                <div className="input-with-icon">
+                  <Building2 size={17} aria-hidden="true" />
+                  <input
+                    id="company"
+                    type="text"
+                    aria-label="Company"
+                    placeholder="Company"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                  />
+                </div>
+              </div>
 
-  <div className="input-with-icon">
-    <BriefcaseBusiness size={17} aria-hidden="true" />
-    <input
-      id="position"
-      type="text"
-      aria-label="Position"
-      placeholder="Position"
-      value={position}
-      onChange={(e) => setPosition(e.target.value)}
-    />
-  </div>
-</div>
+              <div className="form-field">
+                <label htmlFor="position">Position</label>
 
-<div className="form-field">
-  <label htmlFor="offer-url">Offer URL</label>
+                <div className="input-with-icon">
+                  <BriefcaseBusiness size={17} aria-hidden="true" />
+                  <input
+                    id="position"
+                    type="text"
+                    aria-label="Position"
+                    placeholder="Position"
+                    value={position}
+                    onChange={(e) => setPosition(e.target.value)}
+                  />
+                </div>
+              </div>
 
-  <div className="input-with-icon">
-    <Link2 size={17} aria-hidden="true" />
-    <input
-      id="offer-url"
-      type="url"
-      aria-label="Offer URL"
-      placeholder="https://..."
-      value={offerUrl}
-      onChange={(e) => setOfferUrl(e.target.value)}
-    />
-  </div>
-</div>
+              <div className="form-field">
+                <label htmlFor="offer-url">Offer URL</label>
 
-<div className="form-field">
-  <label htmlFor="follow-up-date">Follow-up date</label>
+                <div className="input-with-icon">
+                  <Link2 size={17} aria-hidden="true" />
+                  <input
+                    id="offer-url"
+                    type="url"
+                    aria-label="Offer URL"
+                    placeholder="https://..."
+                    value={offerUrl}
+                    onChange={(e) => setOfferUrl(e.target.value)}
+                  />
+                </div>
+              </div>
 
-  <div className="input-with-icon">
-    <CalendarDays size={17} aria-hidden="true" />
-    <input
-      id="follow-up-date"
-      type="date"
-      aria-label="Follow-up date"
-      value={followUpDate}
-      onChange={(e) => setFollowUpDate(e.target.value)}
-    />
-  </div>
-</div>
+              <div className="form-field">
+                <label htmlFor="follow-up-date">Follow-up date</label>
 
-<div className="form-field form-field-full">
-  <label htmlFor="notes">Notes</label>
+                <div className="input-with-icon">
+                  <CalendarDays size={17} aria-hidden="true" />
+                  <input
+                    id="follow-up-date"
+                    type="date"
+                    aria-label="Follow-up date"
+                    value={followUpDate}
+                    onChange={(e) => setFollowUpDate(e.target.value)}
+                  />
+                </div>
+              </div>
 
-  <div className="input-with-icon textarea-with-icon">
-    <FileText size={17} aria-hidden="true" />
-    <textarea
-      id="notes"
-      aria-label="Notes"
-      placeholder="Notes about this application..."
-      value={notes}
-      onChange={(e) => setNotes(e.target.value)}
-    />
-  </div>
-</div>
-        <div className="modal-actions">
-  <button
-    type="button"
-    className="modal-cancel"
-    onClick={() => setIsAddModalOpen(false)}
-  >
-    Cancel
-  </button>
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="modal-cancel"
+                  onClick={closeApplicationModal}
+                >
+                  Cancel
+                </button>
 
-  <button type="submit" className="modal-submit">
-    <Plus size={17} aria-hidden="true" />
-    Add application
-  </button>
-</div>
-      </form>
-    </div>
-  </div>
-)}
+                <button type="submit" className="modal-submit">
+                  {!editingId && <Plus size={17} aria-hidden="true" />}
+                  {editingId ? "Save changes" : "Add application"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       <section className="applications-panel">
-  <div className="applications-header">
-    <h2 className="section-title applications-title">Applications</h2>
+        <div className="applications-header">
+          <h2 className="section-title applications-title">Applications</h2>
 
-    <button
-      type="button"
-      className="add-application-trigger"
-      onClick={() => setIsAddModalOpen(true)}
-    >
-      <Plus size={17} aria-hidden="true" />
-      Add application
-    </button>
-  </div>
+          <button
+            type="button"
+            className="add-application-trigger"
+            onClick={openAddApplicationModal}
+          >
+            <Plus size={17} aria-hidden="true" />
+            Add application
+          </button>
+        </div>
 
         <section className="tracker-toolbar">
           <div className="filters-group">
@@ -514,20 +574,6 @@ export default function Page() {
               />
             </div>
 
-            <select
-              aria-label="Filter applications by status"
-              value={statusFilter}
-              onChange={(e) =>
-                setStatusFilter(e.target.value as JobStatus | "all")
-              }
-              className="status-filter"
-            >
-              <option value="all">All statuses</option>
-              <option value="todo">Todo</option>
-              <option value="applied">Applied</option>
-              <option value="interview">Interview</option>
-              <option value="rejected">Rejected</option>
-            </select>
             <select
               aria-label="Filter applications by follow-up"
               value={followUpFilter}
@@ -551,17 +597,58 @@ export default function Page() {
             </select>
           </div>
 
-          <div className="offers-counter">
-            <div className="counter-content">
-              <span>Total applications</span>
-              <strong>{jobs.length}</strong>
+          <div className="summary-strip">
+            <div className="summary-metric">
+              <BarChart3 size={18} aria-hidden="true" />
+              <div>
+                <span>Total</span>
+                <strong>{jobs.length}</strong>
+              </div>
             </div>
 
-            <span className="counter-icon" aria-hidden="true">
-              <BarChart3 size={19} />
-            </span>
+            <div className="summary-metric">
+              <CalendarCheck2 size={18} aria-hidden="true" />
+              <div>
+                <span>Interviews</span>
+                <strong>{interviewCount}</strong>
+              </div>
+            </div>
+
+            <div className="summary-metric">
+              <ClockAlert size={18} aria-hidden="true" />
+              <div>
+                <span>Follow-ups due</span>
+                <strong>{followUpsDueCount}</strong>
+              </div>
+            </div>
           </div>
         </section>
+
+        <div
+          className="status-chips"
+          aria-label="Filter applications by status"
+        >
+          {(
+            [
+              ["all", "All"],
+              ["todo", "Todo"],
+              ["applied", "Applied"],
+              ["interview", "Interview"],
+              ["rejected", "Rejected"],
+            ] as const
+          ).map(([status, label]) => (
+            <button
+              key={status}
+              type="button"
+              className={`status-chip ${statusFilter === status ? "active" : ""}`}
+              aria-pressed={statusFilter === status}
+              onClick={() => setStatusFilter(status)}
+            >
+              {label}
+              <span>{statusCounts[status]}</span>
+            </button>
+          ))}
+        </div>
 
         {filteredJobs.length === 0 ? (
           <div className="empty-state">
@@ -584,7 +671,18 @@ export default function Page() {
             <JobTable
               jobs={filteredJobs}
               editingId={editingId}
-              setEditingId={setEditingId}
+              setEditingId={(id) => {
+                if (id === null) {
+                  closeApplicationModal();
+                  return;
+                }
+
+                const job = jobs.find((item) => item.id === id);
+
+                if (job) {
+                  openEditApplicationModal(job);
+                }
+              }}
               updateJob={updateJob}
               cycleStatus={cycleStatus}
               resetStatus={resetStatus}

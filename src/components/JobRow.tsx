@@ -132,22 +132,7 @@ export default function JobRow({
           )}
         </td>
 
-<td className="notes-cell">
-  {job.notes ? (
-    <button
-      type="button"
-      className={`notes-button ${isExpanded ? "is-open" : ""}`}
-      aria-label={`${isExpanded ? "Hide" : "Show"} notes for ${job.company}`}
-      onClick={onToggleDetails}
-    >
-      <StickyNote size={17} aria-hidden="true" />
-    </button>
-  ) : (
-    <span className="notes-empty" aria-label="No notes">
-      <StickyNote size={17} aria-hidden="true" />
-    </span>
-  )}
-</td>
+
 
         <td className="offer-cell">
           {editingId === job.id ? (
@@ -175,57 +160,82 @@ export default function JobRow({
           )}
         </td>
         {/* Row actions */}
-        <td className="center actions">
-          <div className="action-wrapper">
-            {editingId === job.id ? (
-              <button
-                className="action-secondary"
-                onClick={() => setEditingId(null)}
-              >
-                Save
-              </button>
-            ) : (
-              <button
-                className="action-secondary action-icon"
-                aria-label={`Edit ${job.company}`}
-                title="Edit"
-                onClick={() => {
-                  setEditingId(job.id);
+    <td className="actions">
+  {editingId === job.id ? (
+    <div className="manage-editing">
+      <button
+        type="button"
+        className="manage-save"
+        onClick={() => setEditingId(null)}
+      >
+        Save
+      </button>
 
-                  if (!isExpanded) {
-                    onToggleDetails();
-                  }
-                }}
-              >
-                <Pencil size={16} aria-hidden="true" />
-              </button>
-            )}
+      <button
+        type="button"
+        className="manage-delete"
+        onClick={() => {
+          if (window.confirm("Delete this application?")) {
+            deleteJob(job.id);
+          }
+        }}
+      >
+        Delete
+      </button>
+    </div>
+  ) : (
+    <button
+      type="button"
+      className="manage-edit"
+      aria-label={`Edit ${job.company}`}
+      onClick={() => setEditingId(job.id)}
+    >
+      <Pencil size={17} aria-hidden="true" />
+    </button>
+  )}
+</td>
+        <td className="next-action-cell">
+  {job.status === "todo" && (
+    <span className="next-action">Apply</span>
+  )}
 
-            <button
-              className="action-reset action-icon"
-              aria-label={`Reset status for ${job.company}`}
-              title="Reset status"
-              onClick={() => resetStatus(job.id)}
-            >
-              <RotateCcw size={16} aria-hidden="true" />
-            </button>
+  {job.status === "applied" && !job.followUpDate && (
+    <span className="next-action next-action-muted">
+      Set follow-up
+    </span>
+  )}
 
-            <button
-              className="danger action-icon"
-              aria-label={`Delete ${job.company}`}
-              title="Delete"
-              onClick={(e) => {
-                e.stopPropagation();
+  {job.status === "applied" && followUpStatus === "today" && (
+    <span className="next-action next-action-warning">
+      Follow up today
+    </span>
+  )}
 
-                if (window.confirm("Delete this application?")) {
-                  deleteJob(job.id);
-                }
-              }}
-            >
-              <Trash2 size={16} aria-hidden="true" />
-            </button>
-          </div>
-        </td>
+  {job.status === "applied" && followUpStatus === "overdue" && (
+    <span className="next-action next-action-danger">
+      Follow-up overdue
+    </span>
+  )}
+
+  {job.status === "applied" && followUpStatus === "upcoming" && (
+    <span className="next-action">
+      Follow up{" "}
+      {shortDateFormatter.format(
+        new Date(`${job.followUpDate}T00:00:00`),
+      )}
+    </span>
+  )}
+
+  {job.status === "interview" && (
+    <span className="next-action next-action-interview">
+      Prepare interview
+    </span>
+  )}
+
+  {job.status === "rejected" && (
+    <span className="next-action next-action-muted">-</span>
+  )}
+</td>
       </tr>
       {isExpanded && (
         <tr className="job-details-row">
