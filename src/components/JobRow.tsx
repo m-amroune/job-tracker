@@ -1,8 +1,8 @@
 "use client";
-
 import { JobApplication } from "@/types/job";
 import { getFollowUpStatus } from "@/lib/followUp";
 import {
+  ChevronDown,
   ExternalLink,
   Pencil,
   RotateCcw,
@@ -12,6 +12,8 @@ import {
 
 interface JobRowProps {
   job: JobApplication;
+  openStatusId: string | null;
+  setOpenStatusId: (id: string | null) => void;
   editingId: string | null;
   setEditingId: (id: string | null) => void;
   updateJob: (
@@ -19,7 +21,7 @@ interface JobRowProps {
     field: "company" | "position" | "offerUrl" | "followUpDate" | "notes",
     value: string,
   ) => void;
-  cycleStatus: (id: string) => void;
+  updateStatus: (id: string, status: JobApplication["status"]) => void;
   resetStatus: (id: string) => void;
   deleteJob: (id: string) => void;
   isExpanded: boolean;
@@ -28,10 +30,12 @@ interface JobRowProps {
 
 export default function JobRow({
   job,
+  openStatusId,
+  setOpenStatusId,
   editingId,
   setEditingId,
   updateJob,
-  cycleStatus,
+  updateStatus,
   resetStatus,
   deleteJob,
   isExpanded,
@@ -69,8 +73,6 @@ export default function JobRow({
             />
           ) : (
             <div className="company-cell-content">
-             
-
               <span className="company-initial" aria-hidden="true">
                 {job.company.charAt(0).toUpperCase()}
               </span>
@@ -95,14 +97,47 @@ export default function JobRow({
 
         {/* Status can be changed directly from the table */}
         <td className="center status-cell">
-          <button
-            type="button"
-            className={`status-badge status-${job.status}`}
-            aria-label={`Change status for ${job.company}. Current status: ${job.status}`}
-            onClick={() => cycleStatus(job.id)}
-          >
-            {job.status}
-          </button>
+          <div className="status-dropdown">
+            <button
+              type="button"
+              className={`status-badge status-${job.status}`}
+              aria-label={`Change status for ${job.company}`}
+              aria-expanded={openStatusId === job.id}
+              onClick={() =>
+                setOpenStatusId(openStatusId === job.id ? null : job.id)
+              }
+            >
+              <span className="status-badge-label">
+                {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
+              </span>
+
+              <ChevronDown
+                className="status-chevron"
+                size={14}
+                aria-hidden="true"
+              />
+            </button>
+
+            {openStatusId === job.id && (
+              <div className="status-menu">
+                {(["todo", "applied", "interview", "rejected"] as const).map(
+                  (status) => (
+                    <button
+                      key={status}
+                      type="button"
+                      className={job.status === status ? "active" : ""}
+                      onClick={() => {
+                        updateStatus(job.id, status);
+                        setOpenStatusId(null);
+                      }}
+                    >
+                      {status.charAt(0).toUpperCase() + status.slice(1)}
+                    </button>
+                  ),
+                )}
+              </div>
+            )}
+          </div>
         </td>
 
         {/* Application creation date */}
@@ -132,8 +167,6 @@ export default function JobRow({
           )}
         </td>
 
-
-
         <td className="offer-cell">
           {editingId === job.id ? (
             <input
@@ -160,82 +193,78 @@ export default function JobRow({
           )}
         </td>
         {/* Row actions */}
-    <td className="actions">
-  {editingId === job.id ? (
-    <div className="manage-editing">
-      <button
-        type="button"
-        className="manage-save"
-        onClick={() => setEditingId(null)}
-      >
-        Save
-      </button>
+        <td className="actions">
+          {editingId === job.id ? (
+            <div className="manage-editing">
+              <button
+                type="button"
+                className="manage-save"
+                onClick={() => setEditingId(null)}
+              >
+                Save
+              </button>
 
-      <button
-        type="button"
-        className="manage-delete"
-        onClick={() => {
-          if (window.confirm("Delete this application?")) {
-            deleteJob(job.id);
-          }
-        }}
-      >
-        Delete
-      </button>
-    </div>
-  ) : (
-    <button
-      type="button"
-      className="manage-edit"
-      aria-label={`Edit ${job.company}`}
-      onClick={() => setEditingId(job.id)}
-    >
-      <Pencil size={17} aria-hidden="true" />
-    </button>
-  )}
-</td>
+              <button
+                type="button"
+                className="manage-delete"
+                onClick={() => {
+                  if (window.confirm("Delete this application?")) {
+                    deleteJob(job.id);
+                  }
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="manage-edit"
+              aria-label={`Edit ${job.company}`}
+              onClick={() => setEditingId(job.id)}
+            >
+              <Pencil size={17} aria-hidden="true" />
+            </button>
+          )}
+        </td>
         <td className="next-action-cell">
-  {job.status === "todo" && (
-    <span className="next-action">Apply</span>
-  )}
+          {job.status === "todo" && <span className="next-action">Apply</span>}
 
-  {job.status === "applied" && !job.followUpDate && (
-    <span className="next-action next-action-muted">
-      Set follow-up
-    </span>
-  )}
+          {job.status === "applied" && !job.followUpDate && (
+            <span className="next-action next-action-muted">Set follow-up</span>
+          )}
 
-  {job.status === "applied" && followUpStatus === "today" && (
-    <span className="next-action next-action-warning">
-      Follow up today
-    </span>
-  )}
+          {job.status === "applied" && followUpStatus === "today" && (
+            <span className="next-action next-action-warning">
+              Follow up today
+            </span>
+          )}
 
-  {job.status === "applied" && followUpStatus === "overdue" && (
-    <span className="next-action next-action-danger">
-      Follow-up overdue
-    </span>
-  )}
+          {job.status === "applied" && followUpStatus === "overdue" && (
+            <span className="next-action next-action-danger">
+              Follow-up overdue
+            </span>
+          )}
 
-  {job.status === "applied" && followUpStatus === "upcoming" && (
-    <span className="next-action">
-      Follow up{" "}
-      {shortDateFormatter.format(
-        new Date(`${job.followUpDate}T00:00:00`),
-      )}
-    </span>
-  )}
+          {job.status === "applied" && followUpStatus === "upcoming" && (
+            <span className="next-action">
+              Follow up{" "}
+              {shortDateFormatter.format(
+                new Date(`${job.followUpDate}T00:00:00`),
+              )}
+            </span>
+          )}
 
-  {job.status === "interview" && (
-    <span className="next-action next-action-interview">
-      Prepare interview
-    </span>
-  )}
+          {job.status === "interview" && (
+            <span className="next-action next-action-interview">
+              Prepare interview
+            </span>
+          )}
 
-  {job.status === "rejected" && (
-    <span className="next-action next-action-muted">-</span>
-  )}
-</td>
+          {job.status === "rejected" && (
+            <span className="next-action next-action-muted">-</span>
+          )}
+        </td>
       </tr>
       {isExpanded && (
         <tr className="job-details-row">

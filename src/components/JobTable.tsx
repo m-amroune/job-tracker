@@ -58,6 +58,7 @@ interface JobTableProps {
   ) => void;
 
   cycleStatus: (id: string) => void;
+  updateStatus: (id: string, status: JobApplication["status"]) => void;
   resetStatus: (id: string) => void;
   deleteJob: (id: string) => void;
 }
@@ -68,11 +69,12 @@ export default function JobTable({
   setEditingId,
   updateJob,
   cycleStatus,
+  updateStatus,
   resetStatus,
   deleteJob,
 }: JobTableProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-
+  const [openStatusId, setOpenStatusId] = useState<string | null>(null);
   function toggleDetails(id: string) {
     setExpandedId((currentId) => (currentId === id ? null : id));
   }
@@ -153,10 +155,12 @@ export default function JobTable({
               <JobRow
                 key={row.original.id}
                 job={row.original}
+                openStatusId={openStatusId}
+                setOpenStatusId={setOpenStatusId}
                 editingId={editingId}
                 setEditingId={setEditingId}
                 updateJob={updateJob}
-                cycleStatus={cycleStatus}
+                updateStatus={updateStatus}
                 resetStatus={resetStatus}
                 deleteJob={deleteJob}
                 isExpanded={expandedId === row.original.id}
@@ -174,7 +178,7 @@ export default function JobTable({
             key={job.id}
             job={job}
             editingId={editingId}
-           setEditingId={setEditingId}
+            setEditingId={setEditingId}
             updateJob={updateJob}
             cycleStatus={cycleStatus}
             resetStatus={resetStatus}

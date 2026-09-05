@@ -346,6 +346,16 @@ export default function Page() {
     saveJobs(updatedJobs);
   }
 
+  // Set an application status directly.
+  function updateStatus(id: string, status: JobStatus) {
+    const updatedJobs = jobs.map((job) =>
+      job.id === id ? ({ ...job, status } as JobApplication) : job,
+    );
+
+    setJobs(updatedJobs);
+    saveJobs(updatedJobs);
+  }
+
   // Reset an application status back to "todo".
   function resetStatus(id: string) {
     const updatedJobs = jobs.map((job) =>
@@ -424,7 +434,9 @@ export default function Page() {
   return (
     <main className="conteneur">
       <header className="page-header">
-        <h1 className="main-title">Job Tracker</h1>
+        <h1 className="main-title">
+  Job <span>Tracker</span>
+</h1>
       </header>
 
       {isAddModalOpen && (
@@ -685,6 +697,7 @@ export default function Page() {
               }}
               updateJob={updateJob}
               cycleStatus={cycleStatus}
+              updateStatus={updateStatus}
               resetStatus={resetStatus}
               deleteJob={deleteJob}
             />

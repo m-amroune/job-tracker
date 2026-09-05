@@ -105,6 +105,10 @@ a:focus-visible {
   text-align: left;
 }
 
+.main-title span {
+  color: #146c70;
+}
+
 .section-title {
   position: relative;
   margin-bottom: 0.8rem;
@@ -124,7 +128,7 @@ a:focus-visible {
   width: 4px;
   height: 1rem;
   border-radius: 999px;
-  background: var(--primary);
+  background: #374151
 }
 
 .applications-panel {
@@ -158,15 +162,15 @@ a:focus-visible {
   min-height: 40px;
   padding: 0.55rem 0.85rem;
   border-radius: 9px;
-  background: var(--primary);
+  background: #146c70;
   color: #ffffff;
-  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.18);
+  box-shadow: 0 6px 14px rgba(20, 108, 112, 0.18);
 }
 
 .add-application-trigger:hover {
-  background: var(--primary-hover);
+  background: #0f575a;
   transform: translateY(-1px);
-  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+  box-shadow: 0 8px 18px rgba(20, 108, 112, 0.22);
 }
 
 .add-application-trigger:active {
@@ -355,6 +359,14 @@ a:focus-visible {
   justify-content: center;
   gap: 0.45rem;
   min-width: 160px;
+  background: #146c70;
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(20, 108, 112, 0.18);
+}
+
+.form-row .modal-submit:hover {
+  background: #0f575a;
+  box-shadow: 0 8px 18px rgba(20, 108, 112, 0.22);
 }
 
 /* Toolbar */
@@ -475,7 +487,6 @@ a:focus-visible {
   max-width: 1050px;
   margin: 0 auto 1rem;
 }
-
 .status-chip {
   display: inline-flex;
   align-items: center;
@@ -502,13 +513,23 @@ a:focus-visible {
 
 .status-chip:hover {
   background: #f8fafc;
-  border-color: #cbd5e1;
+  border-color: #9fbfc0;
 }
 
 .status-chip.active {
-  background: #1f2937;
-  border-color: #1f2937;
+  background: #146c70;
+  border-color: #146c70;
   color: #ffffff;
+}
+
+.status-chip.active span {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+.status-chip.active:hover {
+  background: #0f575a;
+  border-color: #0f575a;
 }
 
 .status-chip.active span {
@@ -627,7 +648,9 @@ td.actions,
 .table-header-content {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  justify-content: center;
+  gap: 0.25rem;
+  white-space: nowrap;
 }
 
 .sort-indicator {
@@ -749,19 +772,81 @@ td.actions,
 }
 
 /* Status and follow-up */
-
 .status-badge {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 82px;
-  min-height: 30px;
-  padding: 5px 9px;
+  width: clamp(96px, 8vw, 112px);
+  height: 30px;
+  padding: 0;
+  border: 1px solid transparent;
   border-radius: 6px;
   font-size: 0.85rem;
   font-weight: 700;
   line-height: 1;
   cursor: pointer;
+}
+
+.status-badge-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+}
+
+.status-chevron {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.status-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.status-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  z-index: 20;
+  width: 124px;
+  padding: 4px;
+  transform: translateX(-50%);
+  background: #ffffff;
+  border: 1px solid #dbe3ee;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgb(15 23 42 / 10%);
+}
+
+.status-menu button {
+  display: block;
+  width: 100%;
+  min-height: 32px;
+  padding: 0 10px;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  color: #334155;
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.status-menu button:hover {
+  background: #f1f5f9;
+  color: #1f2937;
+}
+
+.status-menu button.active {
+  background: #e9eef5;
+  color: #1f2937;
+  font-weight: 700;
 }
 
 .status-todo {
@@ -931,18 +1016,6 @@ td.date-cell {
   font-weight: 700;
 }
 
-.pagination-controls button {
-  min-width: 34px;
-  min-height: 34px;
-  padding: 0.4rem 0.65rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: #ffffff;
-  color: #374151;
-  font-weight: 600;
-  cursor: pointer;
-}
-
 .pagination-controls {
   display: flex;
   align-items: center;
@@ -957,18 +1030,24 @@ td.date-cell {
   border-radius: 8px;
   background: #ffffff;
   color: #374151;
+  font-weight: 600;
   cursor: pointer;
 }
 
 .pagination-controls button:hover:not(:disabled) {
-  border-color: #c5d0df;
-  background: #f8fafc;
+  border-color: #9fbfc0;
+  background: #f5f9f9;
 }
 
 .pagination-controls button.active {
-  border-color: var(--primary);
-  background: var(--primary);
+  border-color: #146c70;
+  background: #146c70;
   color: #ffffff;
+}
+
+.pagination-controls button.active:hover {
+  border-color: #0f575a;
+  background: #0f575a;
 }
 
 .pagination-controls button:disabled {
